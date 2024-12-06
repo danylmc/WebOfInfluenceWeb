@@ -21,7 +21,7 @@ def get_candidates():
     rows = cursor.fetchall()
     return jsonify(rows)
 
-@app.route('/candidates', methods=['GET'])
+@app.route('/candidates/name', methods=['GET'])
 def get_candidate_by_name():
     first_name = request.args.get('first_name')
     last_name = request.args.get('last_name')
@@ -33,7 +33,7 @@ def get_candidate_by_name():
     rows = cursor.fetchall()
     return jsonify(rows)
 
-@app.route('/candidates', methods=['GET'])
+@app.route('/candidates/electorate', methods=['GET'])
 def get_candidates_by_electorate():
     electorate = request.args.get('electorate')
     query = "SELECT * FROM 2023Candidates WHERE Electorate = %s"
@@ -41,7 +41,7 @@ def get_candidates_by_electorate():
     rows = cursor.fetchall()
     return jsonify(rows)
 
-@app.route('/candidates', methods=['GET'])
+@app.route('/candidates/party', methods=['GET'])
 def get_candidates_by_party():
     party = request.args.get('party')
     query = "SELECT * FROM 2023Candidates WHERE Party = %s"

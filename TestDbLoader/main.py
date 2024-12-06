@@ -10,7 +10,7 @@ connection = mysql.connector.connect(
     passwd = "root"
 )
 mycursor = connection.cursor()  
-file = pd.read_csv("TestDbLoader/2023_candidate_donations.csv")
+file = pd.read_csv("candidate_csv/2023_candidate_donations.csv")
 
 # Puts data in db
 def import_data(cursor, donation_id, first_name, last_name, electorate, party, total_expense, acd_total, part_a, part_b, part_c, part_d, part_f, part_g, part_h):
