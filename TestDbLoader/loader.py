@@ -22,15 +22,29 @@ def use_db(cursor, name):
     except mysql.connector.errors.InterfaceError as e:
         print(f"Error occurred: {e}")
 
-def create_tb(cursor, table_name, column_dict):
+def create_tb(cursor, table_name, column_dict, foreign_keys=None):
     try:
         column_definitions = ", ".join(f"{col_name} {data_type}" for col_name, data_type in column_dict.items())
-        cursor.execute(f"""
-                        CREATE TABLE {table_name}(
-                            {column_definitions}
-                            )
-                        """)
+        
+        foreign_key_definitions = ""
+        if foreign_keys:
+            fk_statements = [
+                f"FOREIGN KEY ({col}) REFERENCES {ref_db}.{ref_table}({ref_col}) ON DELETE CASCADE"
+                for col, ref_db, ref_table, ref_col in foreign_keys
+            ]
+            foreign_key_definitions = ", " + ", ".join(fk_statements)
+        
+        create_query = f"""
+            CREATE TABLE {table_name} (
+                {column_definitions}
+                {foreign_key_definitions}
+            )
+        """
+        cursor.execute(create_query)
+        print(f"Table {table_name} created successfully.")
     except mysql.connector.errors.InterfaceError as e:
+        print(f"Error occurred: {e}")
+    except mysql.connector.Error as e:
         print(f"Error occurred: {e}")
 
 def import_data(connection, cursor, table_name, categories, data):
