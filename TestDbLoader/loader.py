@@ -64,3 +64,16 @@ def clear_tb(cursor, table_name):
 def show_dbs(cursor):
     cursor.execute("SHOW DATABASES")
     print(cursor.fetchall())
+
+from tabulate import tabulate
+
+def check_tb_print(cursor, name):
+    cursor.execute(f"SELECT * FROM {name}")
+    rows = cursor.fetchall()
+    if not rows:
+        print(f"No data found in the table: {name}")
+        return
+    
+    column_names = [desc[0] for desc in cursor.description]
+
+    print(tabulate(rows, headers=column_names, tablefmt="grid"))
