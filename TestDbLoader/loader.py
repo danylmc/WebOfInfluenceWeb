@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector.errors import InterfaceError
 import pandas as pd
+from tabulate import tabulate
 
 def create_db(cursor, name):
     try:
@@ -64,8 +65,6 @@ def clear_tb(cursor, table_name):
 def show_dbs(cursor):
     cursor.execute("SHOW DATABASES")
     print(cursor.fetchall())
-
-from tabulate import tabulate
 
 def check_tb_print(cursor, name):
     cursor.execute(f"SELECT * FROM {name}")
