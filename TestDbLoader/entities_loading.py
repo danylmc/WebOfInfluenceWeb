@@ -113,5 +113,4 @@ def populate_electorate_table():
     load_csv_electorate_20(mycursor, "candidate_csv/2020_candidate_donations.csv")
     load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
-#create_electorate_table()
-#populate_electorate_table()
+
