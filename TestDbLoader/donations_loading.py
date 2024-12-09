@@ -83,7 +83,35 @@ def clean_parties():
     mycursor.execute("DELETE FROM Parties WHERE party_name = 'MAORI PARTY'")
     connection.commit()
 
+def create_electorate_table():
+    ld.create_tb(mycursor, "Electorates", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "electorate_name": "VARCHAR(255)"})
 
+def load_csv_electorate_23_17_14_11(cursor, file):
+    file = pandas.read_csv(file)
+    for index, row in file.iterrows():
+        if pandas.isna(row['Electorate']):
+            print(f"Skipping row {index} due to missing PARTY value.")
+            continue 
+        electorate_check = ld.check_tb(cursor, (f"Electorates WHERE electorate_name = \"{(row['Electorate']).upper()}\""))
+        if not electorate_check:
+            ld.import_data(connection, cursor, "Electorates", ("electorate_name", ), ((row['Electorate']).upper(), ))
 
+def load_csv_electorate_20(cursor, file):
+    file = pandas.read_csv(file)
+    for index, row in file.iterrows():
+        if pandas.isna(row['ELECTORATE']):
+            print(f"Skipping row {index} due to missing PARTY value.")
+            continue 
+        electorate_check = ld.check_tb(cursor, (f"Electorates WHERE electorate_name = \"{(row['ELECTORATE']).upper()}\""))
+        if not electorate_check:
+            ld.import_data(connection, cursor, "Electorates", ("electorate_name", ), ((row['ELECTORATE']).upper(), ))
 
-
+def populate_electorate_table():
+    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2011_candidate_donations.csv")
+    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2014_candidate_donations.csv")
+    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2017_candidate_donations.csv")
+    load_csv_electorate_20(mycursor, "candidate_csv/2020_candidate_donations.csv")
+    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
+    connection.commit()
+#create_electorate_table()
+#populate_electorate_table()
