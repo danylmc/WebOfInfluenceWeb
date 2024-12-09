@@ -38,10 +38,9 @@ def import_data(connection, cursor, table_name, categories, data):
     placeholders = ", ".join(["%s"] * len(data)) 
     query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
     try:
-        # Execute the parameterized query
         cursor.execute(query, data)
         print(f"Data {data} inserted into {table_name} ({columns})")
-    except mysql.connector.Error as e:  # Catch a broader set of MySQL errors
+    except mysql.connector.Error as e: 
         print(f"Error occurred: {e}")
     connection.commit()
 
