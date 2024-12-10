@@ -89,3 +89,14 @@ def check_tb_print(cursor, name):
     column_names = [desc[0] for desc in cursor.description]
 
     print(tabulate(rows, headers=column_names, tablefmt="grid"))
+
+def get_id_match(cursor, original_database_name, database_name, table_name, condition_dict):
+    checks = "AND ".join(f"{col_name} = {data_type}" for col_name, data_type in condition_dict.items())
+    cursor.execute(f"SELECT * FROM {table_name} WHERE {checks}")
+    use_db(cursor, database_name)
+    vals = cursor.fetchall()
+    if not vals:
+        print(f"No match found for ")
+        return None
+    use_db(cursor, original_database_name)
+    return vals[0]["id"]
