@@ -90,13 +90,41 @@ def check_tb_print(cursor, name):
 
     print(tabulate(rows, headers=column_names, tablefmt="grid"))
 
-def get_id_match(cursor, original_database_name, database_name, table_name, condition_dict):
-    checks = "AND ".join(f"{col_name} = {data_type}" for col_name, data_type in condition_dict.items())
-    cursor.execute(f"SELECT * FROM {table_name} WHERE {checks}")
-    use_db(cursor, database_name)
+def get_id_match(cursor, database_name, table_name, condition_dict):
+    conditions = []
+    values = []
+    
+    for col_name, value in condition_dict.items():
+        conditions.append(f"{col_name} = %s")
+        values.append(value)
+    
+    checks = " AND ".join(conditions)
+    print(checks)  
+    
+    query = f"SELECT * FROM {database_name}.{table_name} WHERE {checks}"
+    cursor.execute(query, tuple(values))  
+    
     vals = cursor.fetchall()
     if not vals:
-        print(f"No match found for ")
+        print("No match found.")
         return None
-    use_db(cursor, original_database_name)
-    return vals[0]["id"]
+    return vals[0][0]
+
+
+def map_party_names(name):
+    if name == "GREENS":
+        return "Green Party"
+    elif name == "MANA MOVEMENT":
+        return "MANA"
+    elif name == 'LABOUR':
+        return "LABOUR PARTY"
+    elif name == 'THE OPPORTUNITIES PARTY (TOP)':
+        return 'THE OPPORTUNITIES PARTY'
+    elif name == 'NZ FIRST':
+        return 'NEW ZEALAND FIRST PARTY'
+    elif name == 'MAORI PARTY':
+        return 'TE PATI MAORI'
+    elif name == 'ACT NEW ZEALAND':
+        return 'ACT'
+    else :
+        return name
