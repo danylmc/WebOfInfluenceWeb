@@ -38,7 +38,7 @@ def get_parties():
 def get_electorates():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Entities.Electorate")
+    cursor.execute("SELECT * FROM Entities.Electorates")
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
@@ -140,7 +140,7 @@ def get_candidate_by_name():
     return jsonify(rows)
 
 @app.route('/candidates/election-overview/2023', methods=['GET'])
-def get_candidates_by_election():
+def get_candidates_by_election_23():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview"
@@ -205,7 +205,7 @@ def get_candidates_by_name_2023():
 
 # 2017
 @app.route('/candidates/election-overview/2017', methods=['GET'])
-def get_candidates_by_election():
+def get_candidates_by_election_17():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2017_Candidate_Donation_Overview"
@@ -216,7 +216,7 @@ def get_candidates_by_election():
     return jsonify(rows)
 
 @app.route('/candidates/election-overview/2017/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2023():
+def get_candidates_by_electorate_2017():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     electorate = request.args.get('electorate_name')
@@ -269,7 +269,7 @@ def get_candidates_by_name_2017():
 
 # 2014
 @app.route('/candidates/election-overview/2014', methods=['GET'])
-def get_candidates_by_election():
+def get_candidates_by_election_14():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2014_Candidate_Donation_Overview"
@@ -280,7 +280,7 @@ def get_candidates_by_election():
     return jsonify(rows)
 
 @app.route('/candidates/election-overview/2014/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2023():
+def get_candidates_by_electorate_2014():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     electorate = request.args.get('electorate_name')
@@ -297,7 +297,7 @@ def get_candidates_by_electorate_2023():
     return jsonify(rows)
 
 @app.route('/candidates/election-overview/2014/search/party', methods=['GET'])
-def get_candidates_by_party_2023():
+def get_candidates_by_party_2014():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     party = request.args.get('party_name')
@@ -314,7 +314,7 @@ def get_candidates_by_party_2023():
     return jsonify(rows)
 
 @app.route('/candidates/election-overview/2014/search/name', methods=['GET'])
-def get_candidates_by_name_2023():
+def get_candidates_by_name_2014():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     first_name = request.args.get('first_name')
@@ -332,19 +332,19 @@ def get_candidates_by_name_2023():
     return jsonify(rows)
 
 # 2011
-@app.route('/candidates/election-overview/2023', methods=['GET'])
-def get_candidates_by_election():
+@app.route('/candidates/election-overview/2011', methods=['GET'])
+def get_candidates_by_election_11():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview"
+    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2011_Candidate_Donation_Overview"
     cursor.execute(query)
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-@app.route('/candidates/election-overview/2023/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2023():
+@app.route('/candidates/election-overview/2011/search/electorate', methods=['GET'])
+def get_candidates_by_electorate_2011():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     electorate = request.args.get('electorate_name')
@@ -353,15 +353,15 @@ def get_candidates_by_electorate_2023():
     if not result:
         return jsonify({"error": "Electorate not found"}), 404
     electorate_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview WHERE electorate_id = %s"
+    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2011_Candidate_Donation_Overview WHERE electorate_id = %s"
     cursor.execute(query, (electorate_id,))
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-@app.route('/candidates/election-overview/2023/search/party', methods=['GET'])
-def get_candidates_by_party_2023():
+@app.route('/candidates/election-overview/2011/search/party', methods=['GET'])
+def get_candidates_by_party_2011():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     party = request.args.get('party_name')
@@ -378,7 +378,7 @@ def get_candidates_by_party_2023():
     return jsonify(rows)
 
 @app.route('/candidates/election-overview/2011/search/name', methods=['GET'])
-def get_candidates_by_name_2023():
+def get_candidates_by_name_2011():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     first_name = request.args.get('first_name')
