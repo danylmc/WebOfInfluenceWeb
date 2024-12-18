@@ -89,6 +89,20 @@ def check_tb_print(cursor, name):
     column_names = [desc[0] for desc in cursor.description]
 
     print(tabulate(rows, headers=column_names, tablefmt="grid"))
+from tabulate import tabulate
+
+def check_tb_print_range(cursor, name, start, end):
+    cursor.execute(f"SELECT * FROM {name}")
+    rows = cursor.fetchall()
+    if not rows:
+        print(f"No data found in the table: {name}")
+        return
+    if start < 0 or start >= len(rows) or end <= start or end > len(rows):
+        print(f"Invalid range. The table has {len(rows)} rows.")
+        return
+    column_names = [desc[0] for desc in cursor.description]
+    rows_to_print = rows[start:end]
+    print(tabulate(rows_to_print, headers=column_names, tablefmt="grid"))
 
 def get_id_match(cursor, database_name, table_name, condition_dict):
     conditions = []
