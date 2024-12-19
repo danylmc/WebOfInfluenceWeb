@@ -33,56 +33,50 @@ function App() {
     const handleSearchSubmit = async () => {
         const activeYears = Object.keys(selectedYears).filter(year => selectedYears[year]);
     
-        // If no active years are selected, return no results
         if (activeYears.length === 0) {
             setResults(['No results found']);
             return;
         }
     
-        // Check if any search criteria are provided
         const hasCriteria =
             searchQuery.firstName ||
             searchQuery.lastName ||
             searchQuery.party ||
             searchQuery.electorate;
     
+        if (!hasCriteria) {
+            setResults(['No results found']);
+            return;
+        }
+    
         let allResults = [];
     
-        // Fetch results based on criteria
-        if (hasCriteria) {
-            for (let year of activeYears) {
-                const searchUrls = [
-                    searchQuery.firstName || searchQuery.lastName
-                        ? `http://127.0.0.1:5000/candidates/election-overview/${year}/search/name?first_name=${searchQuery.firstName}&last_name=${searchQuery.lastName}`
-                        : null,
-                    searchQuery.party
-                        ? `http://127.0.0.1:5000/candidates/election-overview/${year}/search/party?party_name=${searchQuery.party}`
-                        : null,
-                    searchQuery.electorate
-                        ? `http://127.0.0.1:5000/candidates/election-overview/${year}/search/electorate?electorate_name=${searchQuery.electorate}`
-                        : null,
-                ].filter(url => url !== null);
+        for (let year of activeYears) {
+            try {
+                const params = new URLSearchParams();
+                if (searchQuery.firstName) params.append('first_name', searchQuery.firstName);
+                if (searchQuery.lastName) params.append('last_name', searchQuery.lastName);
+                if (searchQuery.party) params.append('party_name', searchQuery.party);
+                if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
     
-                for (let url of searchUrls) {
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
+                const response = await fetch(
+                    `http://127.0.0.1:5000/candidates/election-overview/${year}/search/combined?${params.toString()}`
+                );
     
-                        const resultsWithYear = data.map(item => ({
-                            ...item,
-                            election_year: year,
-                        }));
-    
-                        allResults = [...allResults, ...resultsWithYear];
-                    } catch (err) {
-                        console.error(`Error fetching data for ${year}:`, err);
-                    }
+                if (response.ok) {
+                    const data = await response.json();
+                    const resultsWithYear = data.map(item => ({
+                        ...item,
+                        election_year: year,
+                    }));
+                    allResults = [...allResults, ...resultsWithYear];
                 }
+            } catch (err) {
+                console.error(`Error fetching data for ${year}:`, err);
             }
         }
     
-        // If no criteria and no specific search results, show "No results found"
-        if (!hasCriteria || allResults.length === 0) {
+        if (allResults.length === 0) {
             setResults(['No results found']);
         } else {
             setResults(allResults);
@@ -90,8 +84,7 @@ function App() {
     };
 
     return (
-        <div className="flex">
-            {/* Sidebar for Year and Search Filters */}
+        <div className="flex">{}
             <div className="w-64 p-4 bg-gray-100 h-screen">
                 <h2 className="text-xl font-bold mb-4">Filter by Year</h2>
                 {Object.keys(selectedYears).map(year => (
@@ -154,7 +147,7 @@ function App() {
                 </div>
             </div>
 
-            {/* Main Content Area */}
+            {}
             <div className="flex-1 p-4">
                 <h1 className="text-2xl font-bold mb-4">Election Candidates Database</h1>
                 
