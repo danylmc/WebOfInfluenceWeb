@@ -95,3 +95,15 @@ def load_csv_candidate_donations_11(file_name, year):
         total_donations = clean_dollar_value(row['TotalDonationsACD'])
         total_expenses = clean_dollar_value(row['TotalCandidateExpensesPartsABCD'])
         ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d))
+
+
+def full_load_overview():
+    create_election_year_candidates_table("2023_Candidate_Donation_Overview")
+    create_election_year_candidates_table("2017_Candidate_Donation_Overview")
+    create_election_year_candidates_table("2014_Candidate_Donation_Overview")
+    create_election_year_candidates_table("2011_Candidate_Donation_Overview")
+    load_csv_candidate_donations_23_17("candidate_csv/2023_candidate_donations.csv", "2023")
+    load_csv_candidate_donations_23_17("candidate_csv/2017_candidate_donations.csv", "2017")
+    load_csv_candidate_donations_14("candidate_csv/2014_candidate_donations.csv", "2014")
+    load_csv_candidate_donations_11("candidate_csv/2011_candidate_donations.csv", "2011")
+    connection.commit()
