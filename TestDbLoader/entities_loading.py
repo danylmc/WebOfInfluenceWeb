@@ -82,6 +82,7 @@ def clean_parties():
     mycursor.execute("DELETE FROM Parties WHERE party_name = 'THE OPPORTUNITIES PARTY (TOP)'")
     mycursor.execute("DELETE FROM Parties WHERE party_name = 'NZ FIRST'")
     mycursor.execute("DELETE FROM Parties WHERE party_name = 'MAORI PARTY'")
+    mycursor.execute("DELETE FROM Parties WHERE party_name = 'ACT NEW ZEALAND'")
     connection.commit()
 
 def create_electorate_table():
