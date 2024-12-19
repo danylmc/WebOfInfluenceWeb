@@ -395,6 +395,71 @@ def get_candidates_by_name_2011():
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-
+@app.route('/candidates/election-overview/<year>/search/combined', methods=['GET'])
+def get_candidates_combined_search(year):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    party_name = request.args.get('party_name')
+    electorate_name = request.args.get('electorate_name')
+    
+    query = f"""
+        SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview overview
+    """
+    
+    conditions = []
+    params = []
+    
+    if first_name or last_name:
+        name_conditions = []
+        if first_name:
+            name_conditions.append("first_name = %s")
+            params.append(first_name)
+        if last_name:
+            name_conditions.append("last_name = %s")
+            params.append(last_name)
+            
+        conditions.append(f"""
+            overview.people_id IN (
+                SELECT id FROM Entities.People 
+                WHERE {' AND '.join(name_conditions)}
+            )
+        """)
+    
+    if party_name:
+        conditions.append("""
+            overview.party_id IN (
+                SELECT id FROM Entities.Parties 
+                WHERE party_name = %s
+            )
+        """)
+        params.append(party_name)
+    
+    if electorate_name:
+        conditions.append("""
+            overview.electorate_id IN (
+                SELECT id FROM Entities.Electorates 
+                WHERE electorate_name = %s
+            )
+        """)
+        params.append(electorate_name)
+    
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+    
+    try:
+        cursor.execute(query, tuple(params))
+        rows = cursor.fetchall()
+        if not rows:
+            return jsonify({"error": "No results found"}), 404
+        return jsonify(rows)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        connection.close()
+    
 if __name__ == "__main__":
     app.run(debug=True)
