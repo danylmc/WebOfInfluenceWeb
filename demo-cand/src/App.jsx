@@ -186,7 +186,21 @@ function App() {
             </div>
 
             <div className="flex-1 p-4">
-                <h1 className="text-2xl font-bold mb-4">Election Candidates Database</h1>
+                <h1
+                    style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        marginBottom: '1rem',
+                        textAlign: 'center',
+                        color: '#ffffff',
+                        borderBottom: '2px solid #ecf0f1',
+                        paddingBottom: '0.5rem',
+                        fontFamily: 'Arial, sans-serif',
+                    }}
+                >
+                    Election Candidates Overiew Database Search & Filter
+                </h1>
+
                 <Output
                     results={results}
                     onExportCSV={handleExportCSV}
