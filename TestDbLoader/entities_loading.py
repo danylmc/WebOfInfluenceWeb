@@ -74,7 +74,7 @@ def populate_party_table():
     load_csv_party_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
 
-#NEED TO FIX
+
 def clean_parties():
     mycursor.execute("DELETE FROM Parties WHERE party_name = 'GREENS'")
     mycursor.execute("DELETE FROM Parties WHERE party_name = 'MANA MOVEMENT'")
@@ -116,11 +116,3 @@ def populate_electorate_table():
     load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
 
-
-#mycursor.execute("SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview WHERE party_id = '1'")
-#cand = mycursor.fetchall()
-#mycursor.execute(f"SELECT * FROM Entities.People WHERE id = {cand[0][3]}")
-#print(mycursor.fetchall())
-#ld.check_tb_print(mycursor, "Electorates")
-mycursor.execute(f"SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview WHERE people_id = 166")
-print(mycursor.fetchall())

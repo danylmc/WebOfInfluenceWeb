@@ -11,9 +11,6 @@ mycursor = connection.cursor()
 ld.use_db(mycursor, "Overviews_Candidate_Donations_By_Year")
 
 def clean_dollar_value(dollar_str):
-    """
-        Gets rid of extra dollar sign so values can be evaluated numerically
-    """
     try:
         return float(dollar_str.replace("$", "").replace(",", "").strip())
     except ValueError:
@@ -44,11 +41,6 @@ def create_election_year_candidates_table(table_name):
     ]
     
     ld.create_tb(mycursor, table_name, column_dict, foreign_keys)
-
-#create_election_year_candidates_table()
-#ld.check_tb_categories(mycursor, "2023_Candidate_Donation_Overview")
-#ld.check_tb_categories(mycursor, "2023_Candidate_Donaion_Overview")
-#ld.use_db(mycursor, "Entities")
 
 def load_csv_candidate_donations_23_17(file_name, year):
     file = pandas.read_csv(file_name)
@@ -103,16 +95,3 @@ def load_csv_candidate_donations_11(file_name, year):
         total_donations = clean_dollar_value(row['TotalDonationsACD'])
         total_expenses = clean_dollar_value(row['TotalCandidateExpensesPartsABCD'])
         ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d))
-
-
-
-#ld.delete_tb(mycursor, "2023_Candidate_Donation_Overview")
-#connection.commit()
-
-#create_election_year_candidates_table()
-#load_csv_candidate_2023_donations()
-#ld.check_tb_print(mycursor, "2023_Candidate_Donation_Overview")
-#ld.use_db(mycursor, "Entities")
-#create_election_year_candidates_table("2011_Candidate_Donation_Overview")
-#load_csv_candidate_donations_11("candidate_csv/2011_candidate_donations.csv", 2011)
-#ld.check_tb_print_range(mycursor, "2011_Candidate_Donation_Overview", 0, 10)
