@@ -5,7 +5,6 @@ import mysql.connector
 app = Flask(__name__)
 CORS(app) 
 
-#cursor = connection.cursor(dictionary=True)
 def get_db_connection():
     connection = mysql.connector.connect(
         host="localhost",
@@ -139,19 +138,19 @@ def get_candidate_by_name():
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-@app.route('/candidates/election-overview/2023', methods=['GET'])
-def get_candidates_by_election_23():
+@app.route('/candidates/election-overview/<year>', methods=['GET'])
+def get_candidates_by_election_23(year):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview"
+    query = f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview"
     cursor.execute(query)
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-@app.route('/candidates/election-overview/2023/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2023():
+@app.route('/candidates/election-overview/<year>/search/electorate', methods=['GET'])
+def get_candidates_by_electorate(year):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     electorate = request.args.get('electorate_name')
@@ -160,15 +159,15 @@ def get_candidates_by_electorate_2023():
     if not result:
         return jsonify({"error": "Electorate not found"}), 404
     electorate_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview WHERE electorate_id = %s"
+    query = f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview WHERE electorate_id = %s"
     cursor.execute(query, (electorate_id,))
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-@app.route('/candidates/election-overview/2023/search/party', methods=['GET'])
-def get_candidates_by_party_2023():
+@app.route('/candidates/election-overview/<year>/search/party', methods=['GET'])
+def get_candidates_by_party(year):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     party = request.args.get('party_name')
@@ -177,15 +176,15 @@ def get_candidates_by_party_2023():
     if not result:
         return jsonify({"error": "party not found"}), 404
     party_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview WHERE party_id = %s"
+    query = f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview WHERE party_id = %s"
     cursor.execute(query, (party_id,))
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
-@app.route('/candidates/election-overview/2023/search/name', methods=['GET'])
-def get_candidates_by_name_2023():
+@app.route('/candidates/election-overview/<year>/search/name', methods=['GET'])
+def get_candidates_by_name(year):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     first_name = request.args.get('first_name')
@@ -195,200 +194,7 @@ def get_candidates_by_name_2023():
     if not result:
         return jsonify({"error": "Name not found "}), 404
     people_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2023_Candidate_Donation_Overview WHERE people_id = %s"
-    cursor.execute(query, (people_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-
-# 2017
-@app.route('/candidates/election-overview/2017', methods=['GET'])
-def get_candidates_by_election_17():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2017_Candidate_Donation_Overview"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2017/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2017():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    electorate = request.args.get('electorate_name')
-    cursor.execute("SELECT id FROM Entities.Electorates WHERE electorate_name = %s", (electorate,))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Electorate not found"}), 404
-    electorate_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2017_Candidate_Donation_Overview WHERE electorate_id = %s"
-    cursor.execute(query, (electorate_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2017/search/party', methods=['GET'])
-def get_candidates_by_party_2017():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    party = request.args.get('party_name')
-    cursor.execute("SELECT id FROM Entities.Parties WHERE party_name = %s", (party,))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "party not found"}), 404
-    party_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2017_Candidate_Donation_Overview WHERE party_id = %s"
-    cursor.execute(query, (party_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2017/search/name', methods=['GET'])
-def get_candidates_by_name_2017():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    first_name = request.args.get('first_name')
-    last_name = request.args.get('last_name')
-    cursor.execute("SELECT id FROM Entities.People WHERE first_name = %s AND last_name = %s", (first_name, last_name, ))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Name not found "}), 404
-    people_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2017_Candidate_Donation_Overview WHERE people_id = %s"
-    cursor.execute(query, (people_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-# 2014
-@app.route('/candidates/election-overview/2014', methods=['GET'])
-def get_candidates_by_election_14():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2014_Candidate_Donation_Overview"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2014/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2014():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    electorate = request.args.get('electorate_name')
-    cursor.execute("SELECT id FROM Entities.Electorates WHERE electorate_name = %s", (electorate,))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Electorate not found"}), 404
-    electorate_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2014_Candidate_Donation_Overview WHERE electorate_id = %s"
-    cursor.execute(query, (electorate_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2014/search/party', methods=['GET'])
-def get_candidates_by_party_2014():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    party = request.args.get('party_name')
-    cursor.execute("SELECT id FROM Entities.Parties WHERE party_name = %s", (party,))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "party not found"}), 404
-    party_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2014_Candidate_Donation_Overview WHERE party_id = %s"
-    cursor.execute(query, (party_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2014/search/name', methods=['GET'])
-def get_candidates_by_name_2014():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    first_name = request.args.get('first_name')
-    last_name = request.args.get('last_name')
-    cursor.execute("SELECT id FROM Entities.People WHERE first_name = %s AND last_name = %s", (first_name, last_name, ))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Name not found "}), 404
-    people_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2014_Candidate_Donation_Overview WHERE people_id = %s"
-    cursor.execute(query, (people_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-# 2011
-@app.route('/candidates/election-overview/2011', methods=['GET'])
-def get_candidates_by_election_11():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2011_Candidate_Donation_Overview"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2011/search/electorate', methods=['GET'])
-def get_candidates_by_electorate_2011():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    electorate = request.args.get('electorate_name')
-    cursor.execute("SELECT id FROM Entities.Electorates WHERE electorate_name = %s", (electorate,))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Electorate not found"}), 404
-    electorate_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2011_Candidate_Donation_Overview WHERE electorate_id = %s"
-    cursor.execute(query, (electorate_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2011/search/party', methods=['GET'])
-def get_candidates_by_party_2011():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    party = request.args.get('party_name')
-    cursor.execute("SELECT id FROM Entities.Parties WHERE party_name = %s", (party,))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "party not found"}), 404
-    party_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2011_Candidate_Donation_Overview WHERE party_id = %s"
-    cursor.execute(query, (party_id,))
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
-
-@app.route('/candidates/election-overview/2011/search/name', methods=['GET'])
-def get_candidates_by_name_2011():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    first_name = request.args.get('first_name')
-    last_name = request.args.get('last_name')
-    cursor.execute("SELECT id FROM Entities.People WHERE first_name = %s AND last_name = %s", (first_name, last_name, ))
-    result = cursor.fetchone()
-    if not result:
-        return jsonify({"error": "Name not found "}), 404
-    people_id = result['id']
-    query = "SELECT * FROM Overviews_Candidate_Donations_By_Year.2011_Candidate_Donation_Overview WHERE people_id = %s"
+    query = f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview WHERE people_id = %s"
     cursor.execute(query, (people_id,))
     rows = cursor.fetchall()
     if not rows:  
