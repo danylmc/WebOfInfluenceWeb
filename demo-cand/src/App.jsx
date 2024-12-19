@@ -33,25 +33,25 @@ function App() {
 
     const handleSearchSubmit = async () => {
         const activeYears = Object.keys(selectedYears).filter(year => selectedYears[year]);
-    
+
         if (activeYears.length === 0) {
             setResults(['No results found']);
             return;
         }
-    
+
         const hasCriteria =
             searchQuery.firstName ||
             searchQuery.lastName ||
             searchQuery.party ||
             searchQuery.electorate;
-    
+
         if (!hasCriteria) {
             setResults(['No results found']);
             return;
         }
-    
+
         let allResults = [];
-    
+
         for (let year of activeYears) {
             try {
                 const params = new URLSearchParams();
@@ -59,11 +59,11 @@ function App() {
                 if (searchQuery.lastName) params.append('last_name', searchQuery.lastName);
                 if (searchQuery.party) params.append('party_name', searchQuery.party);
                 if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
-    
+
                 const response = await fetch(
                     `http://127.0.0.1:5000/candidates/election-overview/${year}/search/combined?${params.toString()}`
                 );
-    
+
                 if (response.ok) {
                     const data = await response.json();
                     const resultsWithYear = data.map(item => ({
@@ -76,7 +76,7 @@ function App() {
                 console.error(`Error fetching data for ${year}:`, err);
             }
         }
-    
+
         if (allResults.length === 0) {
             setResults(['No results found']);
         } else {
@@ -92,11 +92,11 @@ function App() {
 
         const defaultName = 'election_candidates';
         const filename = prompt('Enter a name for your CSV file:', defaultName) || defaultName;
-        
+
         const finalFilename = filename.endsWith('.csv') ? filename : `${filename}.csv`;
 
         const headers = ['Name', 'Party', 'Electorate', 'Election Year', 'Total Expenses', 'Total Donations'];
-        
+
         const csvRows = [
             headers.join(','),
             ...processedResults.map(row => [
@@ -110,7 +110,7 @@ function App() {
         ];
 
         const csvContent = csvRows.join('\n');
-        
+
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -176,7 +176,7 @@ function App() {
                 </div>
 
                 <div className="mt-4 space-y-2">
-                    <button 
+                    <button
                         onClick={handleSearchSubmit}
                         className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                     >
@@ -187,8 +187,8 @@ function App() {
 
             <div className="flex-1 p-4">
                 <h1 className="text-2xl font-bold mb-4">Election Candidates Database</h1>
-                <Output 
-                    results={results} 
+                <Output
+                    results={results}
                     onExportCSV={handleExportCSV}
                 />
             </div>

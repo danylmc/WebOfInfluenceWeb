@@ -104,7 +104,7 @@ const Output = ({ results, onExportCSV }) => {
     return (
         <div>
             <div className="mb-4">
-                <button 
+                <button
                     onClick={() => onExportCSV(processedResults)}
                     style={{
                         backgroundColor: 'green',
@@ -115,35 +115,72 @@ const Output = ({ results, onExportCSV }) => {
                     }}
                     onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'darkgreen')}
                     onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'green')}
-                    >
-                        Export to CSV
+                >
+                    Export to CSV
                 </button>
             </div>
-            
-            <table className="w-full border-collapse">
+
+            <table
+                style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    marginTop: '1rem',
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: '0.9rem',
+                    color: '#333',
+                }}
+            >
                 <thead>
-                    <tr className="bg-gray-200">
-                        <th className="border p-2">Name</th>
-                        <th className="border p-2">Party</th>
-                        <th className="border p-2">Electorate</th>
-                        <th className="border p-2">Election Year</th>
-                        <th className="border p-2">Total Expenses</th>
-                        <th className="border p-2">Total Donations</th>
+                    <tr
+                        style={{
+                            backgroundColor: '#f5f5f5',
+                            borderBottom: '2px solid #ddd',
+                            textAlign: 'left',
+                        }}
+                    >
+                        <th style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>Name</th>
+                        <th style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>Party</th>
+                        <th style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>Electorate</th>
+                        <th style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>Election Year</th>
+                        <th style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>Total Expenses</th>
+                        <th style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>Total Donations</th>
                     </tr>
                 </thead>
                 <tbody>
                     {processedResults.map((detail, index) => (
-                        <tr key={index} className="hover:bg-gray-100">
-                            <td className="border p-2">{detail.firstName} {detail.lastName}</td>
-                            <td className="border p-2">{detail.party}</td>
-                            <td className="border p-2">{detail.electorate}</td>
-                            <td className="border p-2">{detail.election_year}</td>
-                            <td className="border p-2">{detail.total_expenses}</td>
-                            <td className="border p-2">{detail.total_donations}</td>
+                        <tr
+                            key={index}
+                            style={{
+                                backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff',
+                                borderBottom: '1px solid #ddd',
+                                textAlign: 'left',
+                            }}
+                            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e8f5e9')}
+                            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = index % 2 === 0 ? '#f9f9f9' : '#fff')}
+                        >
+                            <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>
+                                {detail.firstName} {detail.lastName}
+                            </td>
+                            <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>
+                                {detail.party}
+                            </td>
+                            <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>
+                                {detail.electorate}
+                            </td>
+                            <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>
+                                {detail.election_year}
+                            </td>
+                            <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>
+                                {detail.total_expenses}
+                            </td>
+                            <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }}>
+                                {detail.total_donations}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
         </div>
     );
 };
