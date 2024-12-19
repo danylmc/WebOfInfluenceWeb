@@ -30,6 +30,7 @@ function App() {
             [year]: !prevYears[year]
         }));
     };
+
     const handleSearchSubmit = async () => {
         const activeYears = Object.keys(selectedYears).filter(year => selectedYears[year]);
     
@@ -83,8 +84,45 @@ function App() {
         }
     };
 
+    const handleExportCSV = (processedResults) => {
+        if (!processedResults || processedResults.length === 0) {
+            alert('No data to export');
+            return;
+        }
+
+        const defaultName = 'election_candidates';
+        const filename = prompt('Enter a name for your CSV file:', defaultName) || defaultName;
+        
+        const finalFilename = filename.endsWith('.csv') ? filename : `${filename}.csv`;
+
+        const headers = ['Name', 'Party', 'Electorate', 'Election Year', 'Total Expenses', 'Total Donations'];
+        
+        const csvRows = [
+            headers.join(','),
+            ...processedResults.map(row => [
+                `${row.firstName} ${row.lastName}`,
+                row.party,
+                row.electorate,
+                row.election_year,
+                row.total_expenses,
+                row.total_donations
+            ].join(','))
+        ];
+
+        const csvContent = csvRows.join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', finalFilename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
-        <div className="flex">{}
+        <div className="flex">
             <div className="w-64 p-4 bg-gray-100 h-screen">
                 <h2 className="text-xl font-bold mb-4">Filter by Year</h2>
                 {Object.keys(selectedYears).map(year => (
@@ -137,21 +175,22 @@ function App() {
                     />
                 </div>
 
-                <div className="mt-4">
+                <div className="mt-4 space-y-2">
                     <button 
                         onClick={handleSearchSubmit}
-                        className="w-full bg-blue-500 text-white p-2 rounded"
+                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                     >
                         Search
                     </button>
                 </div>
             </div>
 
-            {}
             <div className="flex-1 p-4">
                 <h1 className="text-2xl font-bold mb-4">Election Candidates Database</h1>
-                
-                <Output results={results} />
+                <Output 
+                    results={results} 
+                    onExportCSV={handleExportCSV}
+                />
             </div>
         </div>
     );

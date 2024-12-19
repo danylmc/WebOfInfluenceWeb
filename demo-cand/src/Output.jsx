@@ -45,7 +45,7 @@ const fetchAdditionalDetails = async (result) => {
     }
 };
 
-const Output = ({ results }) => {
+const Output = ({ results, onExportCSV }) => {
     const [processedResults, setProcessedResults] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [resultEntries, setResultEntries] = useState([]);
@@ -103,6 +103,15 @@ const Output = ({ results }) => {
 
     return (
         <div>
+            <div className="mb-4">
+                <button 
+                    onClick={() => onExportCSV(processedResults)}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                >
+                    Export to CSV
+                </button>
+            </div>
+            
             <table className="w-full border-collapse">
                 <thead>
                     <tr className="bg-gray-200">
