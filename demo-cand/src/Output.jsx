@@ -106,9 +106,17 @@ const Output = ({ results, onExportCSV }) => {
             <div className="mb-4">
                 <button 
                     onClick={() => onExportCSV(processedResults)}
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                >
-                    Export to CSV
+                    style={{
+                        backgroundColor: 'green',
+                        color: 'white',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '0.25rem',
+                        transition: 'background-color 0.2s',
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'darkgreen')}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'green')}
+                    >
+                        Export to CSV
                 </button>
             </div>
             
