@@ -1,111 +1,177 @@
-import React, {useRef, useEffect, useState} from 'react';
-import * as d3 from 'd3';
+//import React, {useRef, useEffect, useState} from 'react';
+//import { Bar } from 'react-chartjs-2';  // Import Bar chart from react-chartjs-2
+//import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-const BarChart = () => {
-    const [data, setData] = useState([]);
+//const BarChart = () => {
+  //const dataMap = new Map();
 
-    //Ref to hold the SVG element
-    const svgRef = useRef(null);
+  //async function fetchData() {
+    //const response = await fetch(`http://127.0.0.1:5000/candidates`);
+    //const response2 = await fetch(`http://127.0.0.1:5000/party`);
+    //if (!response.ok){
+      //throw new Error("Error: couldn't get the data")
+    //}
+    //const result = await response.json();
+    //const result2 = await response2.json();
+    //console.log(response);
+    //console.log(result);
+    //console.log(response2);
+    //console.log(result2);
+    //loadData(result);
+  //};
 
-    useEffect(() => {
-        if (data.length === 0) return;  // データがなかったらグラフを見せない
+  //const loadData = (result) => {
+    //esult.forEach(async (candidate) => {
+      // const response = await fetch(`http://127.0.0.1:5000/candidates/search-id?people_id=${candidate.id}`);
+      // const data = await response.json();
+      // console.log(data);
+      // dataMap.set(candidate);
+    //});
+    //console.log(data);
+  //};
+
+  //useEffect(() => {
+    //fetchData();
+  //}, []);
+
+      //return (
+        //<div></div>
+      //);
+    //};
     
-        // Set up margins and dimensions for the chart
-        const margin = { top: 40, right: 30, bottom: 100, left: 150 };
-        const width = 800 - margin.left - margin.right;
-        const height = 500 - margin.top - margin.bottom;
-    
-        // Select the SVG element and append a group element for the chart
-        const svg = d3.select(svgRef.current)
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", `translate(${margin.left},${margin.top})`);
-    
-        // Clean the data and parse donations as numbers
-        data.forEach(d => {
-          d.TotalDonationsACD = +d.TotalDonationsACD;  // Ensure donations are numbers
-          d.CandidateName = d.CandidateName;  // Candidate name
-          d.Party = d.Party;  // Party name
+    //export default BarChart;    
+
+import React, { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2'; 
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+
+// Register the necessary Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const BarChart = ({ results }) => {
+  const [chartData, setChartData] = useState(null);
+
+  // FUnction to fetch candidate names by people_id
+  const fetchCandidateNames = async (people_id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/candidates/search-id?people_id=${people_id}`);
+      const data = await response.json();
+      return data[0]?.first_name + ' ' + data[0]?.last_name || 'Unknown';
+    } catch (error) {
+      console.error('Error fetching candidate name:', error);
+      return 'Unknown';
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (results && results.length > 0) {
+        // Fetch names for each candidate based on people_id
+        const labels = await Promise.all(
+          results.map(async (result) => await fetchCandidateNames(result.people_id))
+        );
+
+        const donations = results.map(result => result.total_donations);
+
+        setChartData({
+          labels: labels,
+          datasets: [
+            {
+              label: 'Total Donations',
+              data: donations,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+            },
+          ],
         });
-    
-        // Sort the data by donations (descending)
-        data.sort((a, b) => b.TotalDonationsACD - a.TotalDonationsACD);
-    
-        // Define scales
-        const xScale = d3.scaleLinear()
-          .domain([0, d3.max(data, d => d.TotalDonationsACD)])  // Max donation value
-          .range([0, width]);  // Width of the chart
-    
-        const yScale = d3.scaleBand()
-          .domain(data.map(d => d.CandidateName))  // List of candidate names
-          .range([0, height])  // Chart height based on the number of bars
-          .padding(0.1);  // Spacing between bars
-    
-        // Color scale (optional: color bars based on party)
-        const partyColorScale = {
-          "National Party": "#00529F",
-          "Labour Party": "#D82A20",
-          "ACT": "FDE401",
-          "Greens": "#098137",
-          "Te Pati Maori": "#6A1D2C",
-          "NZ First": "#000000",
-          "default": "#BEBEBE"  // Default color for other parties
-        };
-    
-        // Create bars
-        svg.selectAll(".bar")
-          .data(data)
-          .enter()
-          .append("rect")
-          .attr("class", "bar")
-          .attr("x", 0)
-          .attr("y", d => yScale(d.CandidateName))
-          .attr("width", d => xScale(d.TotalDonationsACD))
-          .attr("height", yScale.bandwidth())
-          .attr("fill", d => partyColorScale[d.Party] || partyColorScale["default"]);
-    
-        // Add donation labels to the bars
-        svg.selectAll(".label")
-          .data(data)
-          .enter()
-          .append("text")
-          .attr("class", "label")
-          .attr("x", d => xScale(d.TotalDonationsACD) + 10)
-          .attr("y", d => yScale(d.CandidateName) + yScale.bandwidth() / 2)
-          .attr("dy", ".35em")
-          .text(d => `$${d.TotalDonationsACD.toLocaleString()}`)
-          .style("font-family", "Arial")
-          .style("font-size", "12px")
-          .style("fill", "black");
-    
-        // Add the candidate names on the left side
-        svg.selectAll(".name")
-          .data(data)
-          .enter()
-          .append("text")
-          .attr("class", "name")
-          .attr("x", -10)  // Position the name label slightly left of the bars
-          .attr("y", d => yScale(d.CandidateName) + yScale.bandwidth() / 2)
-          .attr("dy", ".35em")
-          .text(d => d.CandidateName)
-          .style("font-family", "Arial")
-          .style("font-size", "12px")
-          .style("fill", "black");
-    
-        // Create the X-Axis at the bottom
-        svg.append("g")
-          .attr("transform", `translate(0,${height})`)
-          .call(d3.axisBottom(xScale));
-    
-        // Create the Y-Axis on the left side
-        svg.append("g")
-          .call(d3.axisLeft(yScale));
-      }, [data]);  // Only re-run when `data` changes
-    
-      return (
-        <svg ref={svgRef}></svg>  // Render the SVG element
-      );
+      }
     };
-    
-    export default BarChart;    
+      //if (results.length > 0 && results !== 'No results found') {
+          // Prepare data for the chart
+          //const labels = results.map(result => `${result.firstName} ${result.lastName}`);
+          //const donations = results.map(result => result.total_donations);
+
+          //setChartData({
+              //labels: labels,
+              //datasets: [
+                  //{
+                      //label: 'Total Donations',
+                      //data: donations,
+                      ////backgroundColor: 'rgba(75, 192, 192, 0.6)', 
+                      //borderColor: 'rgba(75, 192, 192, 1)',
+                      //borderWidth: 1,
+                  //},
+              //],
+          //});
+      //}
+    //};
+
+    fetchData();
+  }, [results]);
+
+  // If no results or chart data is available
+  if (!chartData) {
+      return <p>No data to display</p>;
+  }
+
+  // Chart.js options 
+  const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+          title: {
+              display: true,
+              text: 'Total Donations per Candidate',
+              font: { size: 18 },
+          },
+          tooltip: {
+              callbacks: {
+                  label: function (tooltipItem) {
+                      return `Total Donations: $${tooltipItem.raw.toLocaleString()}`;
+                  },
+              },
+          },
+      },
+      scales: {
+          x: {
+              title: {
+                  display: true,
+                  text: 'Candidates',
+              },
+              ticks: {
+                 autoSkip: false,
+                  maxRotation: 90,
+                  minRotation: 45,
+              },
+          },
+          y: {
+              title: {
+                  display: true,
+                  text: 'Donations ($)',
+              },
+              beginAtZero: true,
+              ticks: {
+                  callback: function (value) {
+                      return `$${value.toLocaleString()}`;
+                  },
+              },
+          },
+      },
+  };
+
+  return (
+      <div className="chart-container w-full">
+          <Bar data={chartData} options={options} />
+      </div>
+  );
+};
+
+export default BarChart;
