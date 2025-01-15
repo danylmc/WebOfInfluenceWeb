@@ -54,6 +54,34 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Styling for the chart container */
+.chart-container {
+  width: 95%;
+  height: auto;
+  min-height: 400px;
+  max-height: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
+@media (max-width: 768px) {
+  .chart-container {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    min-height:300px;
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
