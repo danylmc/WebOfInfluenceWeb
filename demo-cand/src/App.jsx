@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Output from './Output.jsx';
-
+import { useNavigate } from 'react-router-dom';
 function App() {
     const [searchQuery, setSearchQuery] = useState({
         firstName: '',
