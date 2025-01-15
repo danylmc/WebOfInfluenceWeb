@@ -1,7 +1,3 @@
-//import React, {useRef, useEffect, useState} from 'react';
-//import { Bar } from 'react-chartjs-2';  // Import Bar chart from react-chartjs-2
-//import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-
 //const BarChart = () => {
   //const dataMap = new Map();
 
@@ -73,12 +69,15 @@ const BarChart = ({ results }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (results && results.length > 0) {
+        // Sort the results by total donations in descending order
+        const sortedResults = results.sort((a, b) => b.total_donations - a.total_donations);
+
         // Fetch names for each candidate based on people_id
         const labels = await Promise.all(
-          results.map(async (result) => await fetchCandidateNames(result.people_id))
+          sortedResults.map(async (result) => await fetchCandidateNames(result.people_id))
         );
 
-        const donations = results.map(result => result.total_donations);
+        const donations = sortedResults.map(result => result.total_donations);
 
         setChartData({
           labels: labels,
@@ -122,10 +121,14 @@ const BarChart = ({ results }) => {
       return <p>No data to display</p>;
   }
 
-  // Chart.js options 
+  // Dynamically calculate the height of the chart container
+  const containerHeight = Math.max(400, results.length * 90);
+
+  // Horizontal Bar Chart 
   const options = {
       responsive: true,
       maintainAspectRatio: false,
+      indexAxis: 'y',
       plugins: {
           title: {
               display: true,
@@ -144,31 +147,38 @@ const BarChart = ({ results }) => {
           x: {
               title: {
                   display: true,
-                  text: 'Candidates',
+                  text: 'Donations ($)',
               },
               ticks: {
-                 autoSkip: false,
-                  maxRotation: 90,
-                  minRotation: 45,
+                callback: function (value) {
+                  return `$${value.toLocaleString()}`;
+                },
+                 //autoSkip: false,
+                  //maxRotation: 90,
+                  //minRotation: 45,
               },
           },
           y: {
               title: {
                   display: true,
-                  text: 'Donations ($)',
+                  text: 'Candidates',
               },
-              beginAtZero: true,
               ticks: {
-                  callback: function (value) {
-                      return `$${value.toLocaleString()}`;
-                  },
-              },
+                maxRotation: 0,
+                autoSkip: false,
+              }
+              //beginAtZero: true,
+              //ticks: {
+                  //callback: function (value) {
+                      //return `$${value.toLocaleString()}`;
+                  //},
+              //},
           },
       },
   };
 
   return (
-      <div className="chart-container w-full">
+      <div className="chart-container w-full" style={{height: `${containerHeight}px`}}>
           <Bar data={chartData} options={options} />
       </div>
   );
