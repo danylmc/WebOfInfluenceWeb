@@ -1,47 +1,7 @@
-//const BarChart = () => {
-  //const dataMap = new Map();
-
-  //async function fetchData() {
-    //const response = await fetch(`http://127.0.0.1:5000/candidates`);
-    //const response2 = await fetch(`http://127.0.0.1:5000/party`);
-    //if (!response.ok){
-      //throw new Error("Error: couldn't get the data")
-    //}
-    //const result = await response.json();
-    //const result2 = await response2.json();
-    //console.log(response);
-    //console.log(result);
-    //console.log(response2);
-    //console.log(result2);
-    //loadData(result);
-  //};
-
-  //const loadData = (result) => {
-    //esult.forEach(async (candidate) => {
-      // const response = await fetch(`http://127.0.0.1:5000/candidates/search-id?people_id=${candidate.id}`);
-      // const data = await response.json();
-      // console.log(data);
-      // dataMap.set(candidate);
-    //});
-    //console.log(data);
-  //};
-
-  //useEffect(() => {
-    //fetchData();
-  //}, []);
-
-      //return (
-        //<div></div>
-      //);
-    //};
-    
-    //export default BarChart;    
-
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2'; 
+import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Register the necessary Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -54,133 +14,140 @@ ChartJS.register(
 const BarChart = ({ results }) => {
   const [chartData, setChartData] = useState(null);
 
-  // FUnction to fetch candidate names by people_id
-  const fetchCandidateNames = async (people_id) => {
+  const fetchCandidateInfo = async (people_id, party_id, year) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/candidates/search-id?people_id=${people_id}`);
       const data = await response.json();
-      return data[0]?.first_name + ' ' + data[0]?.last_name || 'Unknown';
+      const response2 = await fetch(`http://127.0.0.1:5000/party/search-id?party_id=${party_id}`);
+      const data2 = await response2.json();
+      return {
+        name: data[0]?.first_name + ' ' + data[0]?.last_name || 'Unknown',
+        party: data2[0]?.party_name || 'Unknown',
+        year: year
+      };
     } catch (error) {
-      console.error('Error fetching candidate name:', error);
-      return 'Unknown';
+      console.error('Error fetching candidate info:', error);
+      return { name: 'Unknown fetch', party: 'Unknown fetch', year: 'Unknown fetch' };
     }
+  };
+
+  const getPartyColor = (party) => {
+    const partyColors = {
+      "National Party": "rgb(0, 82, 159)", // #00529F
+      "Labour Party": "rgb(216, 42, 32)", // #D82A20
+      "ACT": "rgb(253, 228, 1)", // #FDE401
+      "Greens": "rgb(9, 129, 55)", // #098137
+      "Te Pāti Māori": "rgb(106, 29, 44)", // #6A1D2C
+      "NZ First": "rgb(0, 0, 0)", // #000000
+      "Unknown": "rgb(190, 190, 190)" // #BEBEBE
+    };
+
+    // Normalize party name and check for matches
+    const normalizedParty = party?.trim().toUpperCase();
+    for (const [key, value] of Object.entries(partyColors)) {
+      if (key.toUpperCase() === normalizedParty) {
+        return value;
+      }
+    }
+    return partyColors.Unknown;
   };
 
   useEffect(() => {
     const fetchData = async () => {
       if (results && results.length > 0) {
-        // Sort the results by total donations in descending order
+        // Sort results by total donations
         const sortedResults = results.sort((a, b) => b.total_donations - a.total_donations);
 
-        // Fetch names for each candidate based on people_id
-        const labels = await Promise.all(
-          sortedResults.map(async (result) => await fetchCandidateNames(result.people_id))
+        // Fetch names and party info for each candidate
+        const candidateInfo = await Promise.all(
+          sortedResults.map(async (result) => await fetchCandidateInfo(result.people_id, result.party_id, result.year))
         );
-
+        
+        const labels = candidateInfo.map(info => `${info.name} (${info.year})`);// TODO: Add year
         const donations = sortedResults.map(result => result.total_donations);
+        const backgroundColor = candidateInfo.map(info => getPartyColor(info.party));
 
+        // Create legend items for unique parties
+        const uniqueParties = [...new Set(candidateInfo.map(info => info.party))];
+        
         setChartData({
           labels: labels,
           datasets: [
             {
               label: 'Total Donations',
               data: donations,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: backgroundColor,
+              borderColor: backgroundColor,
               borderWidth: 1,
             },
           ],
         });
       }
     };
-      //if (results.length > 0 && results !== 'No results found') {
-          // Prepare data for the chart
-          //const labels = results.map(result => `${result.firstName} ${result.lastName}`);
-          //const donations = results.map(result => result.total_donations);
-
-          //setChartData({
-              //labels: labels,
-              //datasets: [
-                  //{
-                      //label: 'Total Donations',
-                      //data: donations,
-                      ////backgroundColor: 'rgba(75, 192, 192, 0.6)', 
-                      //borderColor: 'rgba(75, 192, 192, 1)',
-                      //borderWidth: 1,
-                  //},
-              //],
-          //});
-      //}
-    //};
 
     fetchData();
   }, [results]);
 
-  // If no results or chart data is available
   if (!chartData) {
-      return <p>No data to display</p>;
+    return <p>No data to display</p>;
   }
 
-  // Dynamically calculate the height of the chart container
   const containerHeight = Math.max(400, results.length * 90);
 
-  // Horizontal Bar Chart 
   const options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'y',
-      plugins: {
-          title: {
-              display: true,
-              text: 'Total Donations per Candidate',
-              font: { size: 18 },
-          },
-          tooltip: {
-              callbacks: {
-                  label: function (tooltipItem) {
-                      return `Total Donations: $${tooltipItem.raw.toLocaleString()}`;
-                  },
-              },
-          },
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: {
+      title: {
+        display: true,
+        text: 'Total Donations per Candidate',
+        font: { size: 18 },
       },
-      scales: {
-          x: {
-              title: {
-                  display: true,
-                  text: 'Donations ($)',
-              },
-              ticks: {
-                callback: function (value) {
-                  return `$${value.toLocaleString()}`;
-                },
-                 //autoSkip: false,
-                  //maxRotation: 90,
-                  //minRotation: 45,
-              },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const candidateInfo = context.raw;
+            return [
+              `Total Donations: $${context.raw.toLocaleString()}`
+            ];
           },
-          y: {
-              title: {
-                  display: true,
-                  text: 'Candidates',
-              },
-              ticks: {
-                maxRotation: 0,
-                autoSkip: false,
-              }
-              //beginAtZero: true,
-              //ticks: {
-                  //callback: function (value) {
-                      //return `$${value.toLocaleString()}`;
-                  //},
-              //},
-          },
+        },
       },
+      legend: {
+        display: true,
+        position: 'bottom',
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Donations ($)',
+        },
+        ticks: {
+          callback: function(value) {
+            return `$${value.toLocaleString()}`;
+          },
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Candidates',
+        },
+        ticks: {
+          maxRotation: 0,
+          autoSkip: false,
+        }
+      },
+    },
   };
 
   return (
-      <div className="chart-container w-full" style={{height: `${containerHeight}px`}}>
-          <Bar data={chartData} options={options} />
-      </div>
+    <div className="chart-container w-full" style={{height: `${containerHeight}px`}}>
+      <Bar data={chartData} options={options} />
+    </div>
   );
 };
 

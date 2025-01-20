@@ -2,3 +2,6 @@
 
 .DS_Store
 node_modules/
+package-lock.json
+package.json
+TestDbLoader/__pycache__/loader.cpython-312.pyc
