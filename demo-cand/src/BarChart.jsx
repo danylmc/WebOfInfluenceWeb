@@ -122,7 +122,7 @@ const BarChart = ({ results }) => {
             const parties = [...new Set(chartData.parties)];
             
             return parties.map((party) => ({
-              text: Object.keys(partyColors).includes(party) ? party : 'OTHER',
+              text: Object.keys(partyColors).includes(party) ? party.replace(/PARTY/i, '') : 'OTHER',
               fillStyle: Object.keys(partyColors).includes(party) ? getPartyColor(party) : partyColors.Unknown,
               strokeStyle: Object.keys(partyColors).includes(party) ? getPartyColor(party) : partyColors.Unknown,
               hidden: false,
