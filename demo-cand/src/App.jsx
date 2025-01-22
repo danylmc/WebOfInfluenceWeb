@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Output from './Output.jsx';
 import { useNavigate } from 'react-router-dom';
+import BarChart from './BarChart.jsx';
+
 function App() {
     const [searchQuery, setSearchQuery] = useState({
         firstName: '',
@@ -15,6 +17,7 @@ function App() {
         2011: false
     });
     const [results, setResults] = useState([]);
+    const [processsedResults, setProcessedResults] = useState( []);
 
     const handleSearchChange = (event) => {
         const { name, value } = event.target;
@@ -66,6 +69,7 @@ function App() {
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log(data);
                     const resultsWithYear = data.map(item => ({
                         ...item,
                         election_year: year,
@@ -119,6 +123,18 @@ function App() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    // Processed results and setProcessedResults
+    const processedResultsForChart = (results) => {
+        if (results && results.length > 0 ) {
+            const processedData = results.map(result => ({
+                firstName: result.firstName || 'Unknown',
+                lastName: result.lastName || 'Unknown', 
+                total_donations: result.total_donations || 0,
+            }));
+            setProcessedResults(processedData);
+        }
     };
 
     return (
@@ -201,10 +217,18 @@ function App() {
                     Election Candidates Overiew Database Search & Filter
                 </h1>
 
-                <Output
+                {/* Pass processed results to BarChart */}
+                {results && results.length > 0 && results[0] !== 'No results found' && (
+                    <Output
                     results={results}
                     onExportCSV={handleExportCSV}
                 />
+                    
+                )}
+
+                {/* Pass processed results to BarChart */}
+
+                <BarChart results={results} /> 
             </div>
         </div>
     );
