@@ -8,7 +8,7 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const handleViewSwitch = () => {
-    navigate('/app');
+    navigate('/candidate-overview');
   };
 
   return (

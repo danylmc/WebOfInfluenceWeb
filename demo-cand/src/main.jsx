@@ -8,7 +8,7 @@ createRoot(document.getElementById('root')).render(
   <Router>
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/app" element={<App />} />
+      <Route path="/candidate-overview" element={<App />} />
     </Routes>
   </Router>
 );
