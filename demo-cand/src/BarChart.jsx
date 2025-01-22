@@ -117,6 +117,14 @@ const BarChart = ({ results }) => {
       legend: {
         display: true,
         position: 'bottom',
+        title: {
+          display: true,
+          text: 'Parties', 
+          font: {
+            size: 11, 
+            weight: 'bold', 
+          },
+        },
         labels: {
           generateLabels: function(chart) {
             const parties = [...new Set(chartData.parties)];
@@ -129,6 +137,7 @@ const BarChart = ({ results }) => {
             }));
           },
         },
+        
       },
     },
     scales: {
