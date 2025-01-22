@@ -31,7 +31,8 @@ def create_election_year_candidates_table(table_name):
         "part_d": "FLOAT",
         "part_f": "FLOAT",
         "part_g": "FLOAT",
-        "part_h": "FLOAT"
+        "part_h": "FLOAT",
+        "year": "VARCHAR(4)"
     }
     
     foreign_keys = [
@@ -60,7 +61,7 @@ def load_csv_candidate_donations_23_17(file_name, year):
         part_h = clean_dollar_value(row['TotalPartH'])
         total_donations = clean_dollar_value(row['TotalDonationsACD'])
         total_expenses = clean_dollar_value(row['TotalExpensesFG'])
-        ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d", "part_f", "part_g", "part_h"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d, part_f, part_g, part_h))
+        ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d", "part_f", "part_g", "part_h", "year"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d, part_f, part_g, part_h, year))
 
 def load_csv_candidate_donations_14(file_name, year):
     file = pandas.read_csv(file_name)
@@ -77,7 +78,7 @@ def load_csv_candidate_donations_14(file_name, year):
         part_d = clean_dollar_value(row['TotalPartD'])
         total_donations = clean_dollar_value(row['TotalDonationsACD'])
         total_expenses = clean_dollar_value(row['TotalExpenses'])
-        ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d))
+        ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d", "year"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d, year))
 
 def load_csv_candidate_donations_11(file_name, year):
     file = pandas.read_csv(file_name)
@@ -94,7 +95,7 @@ def load_csv_candidate_donations_11(file_name, year):
         part_d = clean_dollar_value(row['TotalPartD'])
         total_donations = clean_dollar_value(row['TotalDonationsACD'])
         total_expenses = clean_dollar_value(row['TotalCandidateExpensesPartsABCD'])
-        ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d))
+        ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d","year"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d, year))
 
 
 def full_load_overview():
