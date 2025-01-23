@@ -88,7 +88,7 @@ const BarChart = ({ results }) => {
   if (!chartData) {
     return <p>No data to display</p>;
   }
-  
+
   // Dynamically calculate the height of the chart container
   const containerHeight = Math.min(Math.max(400, results.length * 60), 2000);
 
@@ -163,7 +163,7 @@ const BarChart = ({ results }) => {
         },
         ticks: {
           maxRotation: 0,
-          autoSkip: false,
+          autoSkip: true,
         },
       },
     },
