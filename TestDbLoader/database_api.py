@@ -128,11 +128,21 @@ def get_candidate_by_name():
     cursor = connection.cursor(dictionary=True)
     first_name = request.args.get('first_name')
     last_name = request.args.get('last_name')
-    query = """
-        SELECT * FROM Entities.People
-        WHERE first_name = %s AND last_name = %s
-    """
-    cursor.execute(query, (first_name, last_name))
+    query = "SELECT * FROM Entities.People WHERE"
+    values = []
+    if first_name and last_name:
+        query += " first_name = %s AND last_name = %s"
+        values.append(first_name)
+        values.append(last_name)
+    elif last_name:
+        query+= " last_name = %s"
+        values.append(last_name)
+    elif first_name:
+        query+= " first_name = %s"
+        values.append(first_name)
+    else:
+        return jsonify({"error": "At least one parameter (first_name or last_name) is required"}), 400
+    cursor.execute(query, values)
     rows = cursor.fetchall()
     if not rows:  
         return jsonify({"error": "not found"}), 404
