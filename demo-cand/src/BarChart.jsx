@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, elements } from 'chart.js';
 
 ChartJS.register(
   CategoryScale,
@@ -88,8 +88,12 @@ const BarChart = ({ results }) => {
   if (!chartData) {
     return <p>No data to display</p>;
   }
+  
+  // Dynamically calculate the height of the chart container
+  const containerHeight = Math.min(Math.max(400, results.length * 60), 2000);
 
-  const containerHeight = Math.max(400, results.length * 90);
+  // Calculate bar thickness based on number of candidates to display
+  const barThickness = Math.max(15, 100 / results.length);
 
   const options = {
     responsive: true,
@@ -161,6 +165,11 @@ const BarChart = ({ results }) => {
           maxRotation: 0,
           autoSkip: false,
         },
+      },
+    },
+    elements: {
+      bar: {
+        barThickness: barThickness,
       },
     },
   };
