@@ -119,3 +119,19 @@ def get_minister_id(minister_name_first, minister_name_last):
         ld.import_data(connection, mycursor, "People", ("first_name", "last_name"), (minister_name_first.upper(), minister_name_last.upper()))
     return ((ld.check_tb(mycursor, (f"People WHERE first_name = \"{minister_name_first}\" AND last_name = \"{minister_name_last}\"")))[0])
     
+def create_meeting_table():
+    column_dict = {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY",
+        "date": "DATE",
+        "start_time": "TIME",
+        "end_time": "TIME",
+        "location": "VARCHAR(255)",
+        "notes": "VARCHAR(255)",
+        "minister_id": "INT",
+        "type": "VARCHAR(255)",
+        "portfolio": "VARCHAR(255)",
+        "title": "VARCHAR(255)"
+    }
+    
+    
+    ld.create_tb(mycursor, "Meetings", column_dict)
