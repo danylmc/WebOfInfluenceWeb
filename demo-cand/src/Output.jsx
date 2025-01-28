@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ResponsivePagination from 'react-responsive-pagination';
+import 'react-responsive-pagination/themes/classic.css';
 
 class Entry {
     constructor(people_id, party_id, electorate_id, total_expenses, total_donations, election_year) {
@@ -48,7 +50,8 @@ const fetchAdditionalDetails = async (result) => {
 const Output = ({ results, onExportCSV }) => {
     const [processedResults, setProcessedResults] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [resultEntries, setResultEntries] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         const processResults = async () => {
@@ -56,7 +59,6 @@ const Output = ({ results, onExportCSV }) => {
 
             if (!results || results.length === 0 || (results.length === 1 && typeof results[0] === 'string' && results[0] === 'No results found')) {
                 setProcessedResults([]);
-                setResultEntries([]);
                 setIsLoading(false);
                 return;
             }
@@ -65,26 +67,10 @@ const Output = ({ results, onExportCSV }) => {
                 const detailedResults = await Promise.all(
                     results.map(result => fetchAdditionalDetails(result))
                 );
-
                 setProcessedResults(detailedResults);
-
-                const entries = detailedResults.map(detail =>
-                    new Entry(
-                        detail.firstName,
-                        detail.lastName,
-                        detail.party,
-                        detail.electorate,
-                        detail.total_expenses,
-                        detail.total_donations,
-                        detail.election_year
-                    )
-                );
-                setResultEntries(entries);
-
             } catch (error) {
                 console.error("Error processing results:", error);
                 setProcessedResults([]);
-                setResultEntries([]);
             } finally {
                 setIsLoading(false);
             }
@@ -92,6 +78,17 @@ const Output = ({ results, onExportCSV }) => {
 
         processResults();
     }, [results]);
+
+    // Calculate pagination values 
+    const totalPages = Math.ceil(processedResults.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = processedResults.slice(startIndex, endIndex);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        //window.scrollTo(0, 0); // Scroll to top when page changes
+    };
 
     if (isLoading) {
         return <div>Loading results...</div>;
@@ -147,7 +144,7 @@ const Output = ({ results, onExportCSV }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {processedResults.map((detail, index) => (
+                    {currentData.map((detail, index) => (
                         <tr
                             key={index}
                             style={{
@@ -181,6 +178,14 @@ const Output = ({ results, onExportCSV }) => {
                 </tbody>
             </table>
 
+            <div className="mt-4">
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalPages}
+                    onPageChange={handlePageChange}
+                    maxWidth={300}
+                />
+            </div>
         </div>
     );
 };
