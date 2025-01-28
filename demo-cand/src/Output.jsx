@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ResponsivePagination from 'react-responsive-pagination';
-import 'react-responsive-pagination/themes/classic.css';
+import 'react-responsive-pagination/themes/bootstrap.css';
 
 class Entry {
     constructor(people_id, party_id, electorate_id, total_expenses, total_donations, election_year) {
@@ -184,6 +184,8 @@ const Output = ({ results, onExportCSV }) => {
                     total={totalPages}
                     onPageChange={handlePageChange}
                     maxWidth={300}
+                    previousLabel="Previous" 
+                    nextLabel="Next"
                 />
             </div>
         </div>
