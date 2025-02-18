@@ -43,6 +43,20 @@ def get_electorates():
         return jsonify({"error": "not found"}), 404
     return jsonify(rows)
 
+@app.route('/donor/search-id', methods=['GET'])
+def get_donor_by_id():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    donor_id = request.args.get('donor_id')
+    query = """
+        SELECT * FROM Entities.Donors
+        WHERE id = %s
+    """
+    cursor.execute(query, (donor_id,))
+    rows = cursor.fetchall()
+    if not rows:  
+        return jsonify({"error": "not found"}), 404
+    return jsonify(rows)
 
 @app.route('/party/search-id', methods=['GET'])
 def get_parties_by_id():
@@ -276,6 +290,98 @@ def get_candidates_combined_search(year):
     finally:
         cursor.close()
         connection.close()
-    
+
+@app.route('/donations/<year>', methods=['GET'])
+def get_candidate_donations_list_by_year(year):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    query1 = "SELECT * FROM Entities.People where first_name = %s AND last_name = %s"
+    cursor.execute(query1, (first_name, last_name))
+    result = cursor.fetchone()
+    if not result:
+        return jsonify({"error": "Candidate not found"}), 404
+    people_id = result['id']
+    query2 = f"SELECT * FROM Donations_Individual.Donations_Log_{year} WHERE minister_donated = %s"
+    cursor.execute(query2, (people_id,))
+    rows = cursor.fetchall()
+    return jsonify(rows)
+
+from datetime import timedelta
+def convert_timedelta(obj):
+    """Convert timedelta objects to a string format."""
+    if isinstance(obj, timedelta):
+        return str(obj)  # Example output: "1:30:00"
+    return obj
+
+@app.route('/ministerial_diaries/search-cand', methods=['GET'])
+def get_candidate_meetings():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    query1 = "SELECT * FROM Entities.People where first_name = %s AND last_name = %s"
+    cursor.execute(query1, (first_name, last_name))
+    result = cursor.fetchone()
+    if not result:
+        return jsonify({"error": "Candidate not found"}), 404
+    people_id = result['id']
+    query2 = f"SELECT * FROM Ministerial_Meetings.Meetings_Log WHERE minister_logged_id = %s"
+    cursor.execute(query2, (people_id,))
+    rows = cursor.fetchall()
+    for row in rows:
+        for key, value in row.items():
+            row[key] = convert_timedelta(value)
+    return jsonify(rows)
+
+@app.route('/ministerial_diaries/search-cand-filter', methods=['GET'])
+def search_ministerial_diaries():
+    first_name = request.args.get('first_name')
+    last_name = request.args.get('last_name')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    if not first_name or not last_name:
+        return jsonify({"error": "Both first name and last name are required"}), 400
+
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Query to get the candidate by name
+    query1 = "SELECT * FROM Entities.People WHERE first_name = %s AND last_name = %s"
+    cursor.execute(query1, (first_name, last_name))
+    result = cursor.fetchone()
+
+    if not result:
+        return jsonify({"error": "Candidate not found"}), 404
+
+    people_id = result['id']
+
+    # Start building the query for the meetings
+    query2 = "SELECT * FROM Ministerial_Meetings.Meetings_Log WHERE minister_logged_id = %s"
+    params = [people_id]
+
+    if start_date and end_date:
+        query2 += " AND (date BETWEEN %s AND %s)"
+        params.extend([start_date, end_date])
+
+    cursor.execute(query2, params)
+    rows = cursor.fetchall()
+
+    # Convert timedelta if necessary
+    for row in rows:
+        for key, value in row.items():
+            row[key] = convert_timedelta(value)
+
+    cursor.close()
+    connection.close()
+
+    if rows:
+        return jsonify(rows), 200
+    else:
+        return jsonify({"error": "No meetings found"}), 404
+
+
 if __name__ == "__main__":
     app.run(debug=True)
