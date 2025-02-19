@@ -116,6 +116,7 @@ def populate_electorate_table():
     load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
 
+
 def full_load_entities():
     create_people_table()
     populate_people_table()
@@ -125,3 +126,8 @@ def full_load_entities():
     create_electorate_table()
     populate_electorate_table()
     connection.commit()
+
+
+def create_donor_table():
+    ld.create_tb(mycursor, "Donors", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "first_name": "VARCHAR(255)", "last_name": "VARCHAR(255)"})
+
