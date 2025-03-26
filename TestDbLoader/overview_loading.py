@@ -8,6 +8,7 @@ connection = mysql.connector.connect(
     passwd = "root"
 )
 mycursor = connection.cursor()
+# Remove below if havent created
 ld.use_db(mycursor, "Overviews_Candidate_Donations_By_Year")
 
 def clean_dollar_value(dollar_str):
@@ -123,7 +124,12 @@ def load_csv_candidate_donations_11(file_name, year):
         original_id = row['_2011CandidateDonations_Id']   
         ld.import_data(connection, mycursor, f"{year}_Candidate_Donation_Overview", ["total_donations", "total_expenses", "people_id", "party_id", "electorate_id", "part_a", "part_b", "part_c", "part_d","year", "original_id"], (total_donations, total_expenses, person_id, party_id, electorate_id, part_a, part_b, part_c, part_d, year, original_id))
 
+def create_db():
+    ld.create_db(mycursor, "Overviews_Candidate_Donations_By_Year")
+    connection.commit()
+    
 def full_load_overview():
+    create_db()
     mycursor.execute("create database Overviews_Candidate_Donations_By_Year")
     create_election_year_candidates_table("2023_Candidate_Donation_Overview")
     create_election_year_candidates_table("2017_Candidate_Donation_Overview")

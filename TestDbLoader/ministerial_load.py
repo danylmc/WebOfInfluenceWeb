@@ -147,8 +147,10 @@ def create_meeting_table():
     
     
     ld.create_tb(mycursor, "Meetings_Log", column_dict, foreign_keys)
-
-
+def create_db():
+    ld.create_db(mycursor, "Ministerial_Meetings")
+    connection.commit()
+    
 def load_meetings():
     create_meeting_table()
     #create_meeting_link_table()
@@ -211,7 +213,7 @@ def normalize_date(date_string):
         raise ValueError(f"Invalid date format: {date_string}")
 
 
-
+create_db()
 load_meetings()
 read_meeting_file("ANDREW_HOGGARD", "APROCT24")
 

@@ -8,7 +8,9 @@ connection = mysql.connector.connect(
     passwd = "root"
 )
 
+
 mycursor = connection.cursor()
+# Remove below if havent created
 ld.use_db(mycursor, "Entities")
 
 def create_people_table():
@@ -116,8 +118,12 @@ def populate_electorate_table():
     load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
 
-
+def create_db():
+    ld.create_db(mycursor, "Entities")
+    connection.commit()
+    
 def full_load_entities():
+    create_db()
     create_people_table()
     populate_people_table()
     create_party_table()
@@ -125,6 +131,7 @@ def full_load_entities():
     clean_parties()
     create_electorate_table()
     populate_electorate_table()
+    create_donor_table()
     connection.commit()
 
 

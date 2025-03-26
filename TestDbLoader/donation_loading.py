@@ -124,9 +124,12 @@ def check_donor_id(first_name, last_name):
         connection.commit()
         return (ld.check_tb(mycursor, "Donors ORDER BY id DESC LIMIT 1"))[0][0]
 
-def create_donation_db_and_tables():
-    mycursor.execute("create database Donations_Individual")
+def create_db():
+    ld.create_db(mycursor, "Ministerial_Meetings")
     connection.commit()
+    
+def create_donation_db_and_tables():
+    create_db()
     create_donation_table("2023")
     create_donation_table("2017")
     create_donation_table("2014")
