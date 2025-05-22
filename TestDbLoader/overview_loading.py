@@ -5,11 +5,11 @@ import pandas
 connection = mysql.connector.connect(
     host="localhost",
     user = "root",
-    passwd = "root"
+    passwd = "Engr4892025"
 )
 mycursor = connection.cursor()
 # Remove below if havent created
-ld.use_db(mycursor, "Overviews_Candidate_Donations_By_Year")
+#ld.use_db(mycursor, "Overviews_Candidate_Donations_By_Year")
 
 def clean_dollar_value(dollar_str):
     try:
@@ -130,7 +130,8 @@ def create_db():
     
 def full_load_overview():
     create_db()
-    mycursor.execute("create database Overviews_Candidate_Donations_By_Year")
+    connection.commit()
+    ld.use_db(mycursor, "Overviews_Candidate_Donations_By_Year")
     create_election_year_candidates_table("2023_Candidate_Donation_Overview")
     create_election_year_candidates_table("2017_Candidate_Donation_Overview")
     create_election_year_candidates_table("2014_Candidate_Donation_Overview")

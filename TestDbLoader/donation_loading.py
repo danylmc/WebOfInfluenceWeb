@@ -11,7 +11,7 @@ import ministerial_load as ml
 connection = mysql.connector.connect(
     host="localhost",
     user = "root",
-    passwd = "root"
+    passwd = "Engr4892025"
 )
 mycursor = connection.cursor()
 
@@ -127,9 +127,14 @@ def check_donor_id(first_name, last_name):
 def create_db():
     ld.create_db(mycursor, "Ministerial_Meetings")
     connection.commit()
-    
+
+def create_db_2():
+    ld.create_db(mycursor, "donations_individual")
+    connection.commit()
+
 def create_donation_db_and_tables():
     create_db()
+    create_db_2()
     create_donation_table("2023")
     create_donation_table("2017")
     create_donation_table("2014")

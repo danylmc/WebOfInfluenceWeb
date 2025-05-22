@@ -10,7 +10,7 @@ import json
 connection = mysql.connector.connect(
     host="localhost",
     user = "root",
-    passwd = "root"
+    passwd = "Engr4892025"
 )
 mycursor = connection.cursor()
 

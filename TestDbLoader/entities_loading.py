@@ -5,13 +5,13 @@ import pandas
 connection = mysql.connector.connect(
     host="localhost",
     user = "root",
-    passwd = "root"
+    passwd = "Engr4892025"
 )
 
 
 mycursor = connection.cursor()
 # Remove below if havent created
-ld.use_db(mycursor, "Entities")
+#ld.use_db(mycursor, "Entities")
 
 def create_people_table():
     ld.create_tb(mycursor, "People", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "first_name": "VARCHAR(255)", "last_name": "VARCHAR(255)"})
@@ -124,6 +124,8 @@ def create_db():
     
 def full_load_entities():
     create_db()
+    ld.use_db(mycursor, "Entities")
+    connection.commit()
     create_people_table()
     populate_people_table()
     create_party_table()
