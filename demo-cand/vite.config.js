@@ -6,8 +6,6 @@ export default defineConfig({
   server: {
     host: true, // needed to accept external connections
     port: 5173,
-    allowedHosts: [
-      '619b-2404-440c-2302-8f00-b533-7844-25e5-31b4.ngrok-free.app' //ngrok hostname
-    ]
+    allowedHosts: 'all' // ✅ Allow any hostname for ngrok
   }
 })
