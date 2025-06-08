@@ -137,8 +137,21 @@ function CandidateOverview() {
         }
     };
 
+    const navigate = useNavigate();
+    const handleBackToHome = () => {
+        navigate('/');
+    };
+
     return (
         <div className="flex">
+            {/* Home Button */}
+            <button
+                onClick={handleBackToHome}
+                className="fixed top-4 right-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded shadow z-50"
+            >
+                ← Back to Home
+            </button>
+
             <div className="w-64 p-4 bg-gray-100 h-screen">
                 <h2 className="text-xl font-bold mb-4">Filter by Year</h2>
                 {Object.keys(selectedYears).map(year => (
@@ -227,7 +240,6 @@ function CandidateOverview() {
                 )}
 
                 {/* Pass processed results to BarChart */}
-
                 <BarChart results={results} /> 
             </div>
         </div>
