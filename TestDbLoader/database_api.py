@@ -10,6 +10,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         passwd="Engr4892025",
+        unix_socket="/tmp/mysql.sock",
     )
     return connection
 
