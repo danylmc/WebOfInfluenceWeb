@@ -9,7 +9,7 @@ def get_db_connection():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        passwd="Engr4892025",
+        passwd="engr4892025",
         unix_socket="/tmp/mysql.sock",
     )
     return connection

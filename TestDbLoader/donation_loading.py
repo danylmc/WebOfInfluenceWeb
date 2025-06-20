@@ -11,7 +11,7 @@ import ministerial_load as ml
 connection = mysql.connector.connect(
     host="localhost",
     user = "root",
-    passwd = "Engr4892025"
+    passwd = "engr4892025"
 )
 mycursor = connection.cursor()
 
