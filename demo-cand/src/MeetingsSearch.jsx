@@ -58,9 +58,21 @@ const MeetingsSearch = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Search Ministerial Meetings</h2>
-      <div className="grid grid-cols-2 gap-4 max-w-2xl mb-4">
+    <div className="p-4 relative">
+      {/* Header row with title and Back button */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Search Ministerial Meetings</h2>
+        <div className="flex justify-end mt-2 mb-6 pr-4 w-screen">
+          <button
+            onClick={() => window.location.href = '/'}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+          >
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 max-w-2xl mt-6 mb-4">
         <input
           type="text"
           name="firstName"
