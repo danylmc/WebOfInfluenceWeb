@@ -25,7 +25,7 @@ def use_db(cursor, name):
 def create_tb(cursor, table_name, column_dict, foreign_keys=None):
     try:
         column_definitions = ", ".join(f"{col_name} {data_type}" for col_name, data_type in column_dict.items())
-        
+
         foreign_key_definitions = ""
         if foreign_keys:
             fk_statements = [
@@ -33,19 +33,13 @@ def create_tb(cursor, table_name, column_dict, foreign_keys=None):
                 for col, ref_db, ref_table, ref_col in foreign_keys
             ]
             foreign_key_definitions = ", " + ", ".join(fk_statements)
-        
-        create_query = f"""
-            CREATE TABLE {table_name} (
-                {column_definitions}
-                {foreign_key_definitions}
-            )
-        """
+
+        create_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({column_definitions}{foreign_key_definitions})"
+        print(f"Executing SQL for table creation:\n{create_query}")  # ✅ Print the full query
         cursor.execute(create_query)
-        print(f"Table {table_name} created successfully.")
-    except mysql.connector.errors.InterfaceError as e:
-        print(f"Error occurred: {e}")
+        print(f"✅ Table {table_name} created successfully.")
     except mysql.connector.Error as e:
-        print(f"Error occurred: {e}")
+        print(f"❌ Error creating table {table_name}: {e}")
 
 def import_data(connection, cursor, table_name, categories, data):
     columns = ", ".join(categories) 

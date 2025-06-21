@@ -11,7 +11,7 @@ connection = mysql.connector.connect(
 
 mycursor = connection.cursor()
 # Remove below if havent created
-#ld.use_db(mycursor, "Entities")
+# ld.use_db(mycursor, "Entities")
 
 def create_people_table():
     ld.create_tb(mycursor, "People", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "first_name": "VARCHAR(255)", "last_name": "VARCHAR(255)"})
@@ -123,18 +123,28 @@ def create_db():
     connection.commit()
     
 def full_load_entities():
+    # Ensure the database exists
     create_db()
+
+    # Switch to using that DB
     ld.use_db(mycursor, "Entities")
-    connection.commit()
+
+    # Step 3: Create and populate tables
     create_people_table()
     populate_people_table()
+
     create_party_table()
     populate_party_table()
+
     clean_parties()
+
     create_electorate_table()
     populate_electorate_table()
+
     create_donor_table()
+
     connection.commit()
+
 
 
 def create_donor_table():
