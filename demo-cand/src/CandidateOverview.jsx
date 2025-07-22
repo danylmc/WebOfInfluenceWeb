@@ -3,6 +3,7 @@ import Output from './Output.jsx';
 import { useNavigate } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
 import { API_BASE } from './apiConfig';
+import './CandidateOverview.css';
 
 function CandidateOverview() {
     const [searchQuery, setSearchQuery] = useState({
@@ -19,6 +20,9 @@ function CandidateOverview() {
     });
     const [results, setResults] = useState([]);
     const [processsedResults, setProcessedResults] = useState( []);
+
+    const navigate = useNavigate();
+    const handleBackToHome = () => navigate('/');
 
     const handleSearchChange = (event) => {
         const { name, value } = event.target;
@@ -138,46 +142,37 @@ function CandidateOverview() {
         }
     };
 
-    const navigate = useNavigate();
-    const handleBackToHome = () => {
-        navigate('/');
-    };
-
     return (
-        <div className="flex">
-            {/* Home Button */}
-            <button
-                onClick={handleBackToHome}
-                className="fixed top-4 right-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded shadow z-50"
-            >
-                ← Back to Home
-            </button>
+        <div className="page-wrapper">
+            <div className="candidate-wrapper">
+                <div className="candidate-inner">
+                    <div className="header-row">
+                        <h2>Filter by Year</h2>
+                        <button onClick={handleBackToHome}> 
+                            ←  Back to Home</button>
+                    </div>
 
-            <div className="w-64 p-4 bg-gray-100 h-screen">
-                <h2 className="text-xl font-bold mb-4">Filter by Year</h2>
-                {Object.keys(selectedYears).map(year => (
-                    <div key={year} className="mb-2">
-                        <label className="inline-flex items-center">
+                    {Object.keys(selectedYears).map(year => (
+                        <div key={year} className="checkbox-wrapper">
+                            <span className="checkbox-label">{year}</span>
                             <input
                                 type="checkbox"
                                 checked={selectedYears[year]}
                                 onChange={() => handleYearChange(year)}
-                                className="form-checkbox"
                             />
-                            <span className="ml-2">{year}</span>
-                        </label>
-                    </div>
-                ))}
+                        </div>
+                    ))}
 
-                <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2">Search Filters</h3>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '1.5rem 0 0.5rem' }}>
+                        Search Filters
+                    </h3>
+
                     <input
                         type="text"
                         name="firstName"
                         placeholder="First Name"
                         value={searchQuery.firstName}
                         onChange={handleSearchChange}
-                        className="w-full mb-2 p-1 border"
                     />
                     <input
                         type="text"
@@ -185,7 +180,6 @@ function CandidateOverview() {
                         placeholder="Last Name"
                         value={searchQuery.lastName}
                         onChange={handleSearchChange}
-                        className="w-full mb-2 p-1 border"
                     />
                     <input
                         type="text"
@@ -193,7 +187,6 @@ function CandidateOverview() {
                         placeholder="Party"
                         value={searchQuery.party}
                         onChange={handleSearchChange}
-                        className="w-full mb-2 p-1 border"
                     />
                     <input
                         type="text"
@@ -201,50 +194,28 @@ function CandidateOverview() {
                         placeholder="Electorate"
                         value={searchQuery.electorate}
                         onChange={handleSearchChange}
-                        className="w-full mb-2 p-1 border"
                     />
-                </div>
 
-                <div className="mt-4 space-y-2">
-                    <button
-                        onClick={handleSearchSubmit}
-                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                    >
+                    <button onClick={handleSearchSubmit} className="search-button">
                         Search
                     </button>
                 </div>
             </div>
 
-            <div className="flex-1 p-4">
-                <h1
-                    style={{
-                        fontSize: '2rem',
-                        fontWeight: 'bold',
-                        marginBottom: '1rem',
-                        textAlign: 'center',
-                        color: '#ffffff',
-                        borderBottom: '2px solid #ecf0f1',
-                        paddingBottom: '0.5rem',
-                        fontFamily: 'Arial, sans-serif',
-                    }}
-                >
-                    Election Candidates Overiew Database Search & Filter
-                </h1>
+            <div className="results-section">
+                <h2>
+                    Election Candidates Overview Database Search & Filter
+                </h2>
 
-                {/* Pass processed results to BarChart */}
-                {results && results.length > 0 && results[0] !== 'No results found' && (
-                    <Output
-                    results={results}
-                    onExportCSV={handleExportCSV}
-                />
-                    
-                )}
+            {results && results.length > 0 && results[0] !== 'No results found' && (
+                <Output results={results} onExportCSV={handleExportCSV} />
+            )}
 
-                {/* Pass processed results to BarChart */}
-                <BarChart results={results} /> 
+            <BarChart results={results} />
             </div>
         </div>
-    );
+        );
+
 }
 
 export default CandidateOverview;
