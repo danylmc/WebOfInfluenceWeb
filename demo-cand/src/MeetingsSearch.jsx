@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MeetingsTable from './MeetingsTable';
 import './MeetingsSearch.css';
 import { API_BASE } from './apiConfig';
+import { useNavigate } from 'react-router-dom';
 
 
 const MeetingsSearch = () => {
@@ -14,6 +15,8 @@ const MeetingsSearch = () => {
   });
   const [meetings, setMeetings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
   
   const handleSearchChange = (event) => {
     const { name, value } = event.target;
@@ -62,16 +65,14 @@ const MeetingsSearch = () => {
   return (
     <div className="p-4 relative">
       {/* Header row with title and Back button */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="header-row">
         <h2 className="text-2xl font-bold">Search Ministerial Meetings</h2>
-        <div className="flex justify-end mt-2 mb-6 pr-4 w-screen">
-          <button
-            onClick={() => window.location.href = '/'}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
-          >
-            ← Back to Home
-          </button>
-        </div>
+        <button
+          onClick={() => navigate('/')}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          ← Back to Home
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 max-w-2xl mt-6 mb-4">

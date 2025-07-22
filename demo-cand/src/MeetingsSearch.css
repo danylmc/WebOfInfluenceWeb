@@ -108,4 +108,17 @@
   .bg-gray-100 {
     background-color: #f3f4f6;
   }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between; /* puts items at opposite ends */
+    align-items: center;            /* vertically centers items */
+    margin-bottom: 1.5rem;          /* spacing */
+  } 
+
+  .header-row button {
+    margin-left: auto;
+  }
+
+
   
