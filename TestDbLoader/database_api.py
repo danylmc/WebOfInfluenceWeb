@@ -384,6 +384,9 @@ def search_ministerial_diaries():
     else:
         return jsonify({"error": "No meetings found"}), 404
 
+@app.route('/')
+def health():
+    return "API is running!"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5050)))
