@@ -1,13 +1,29 @@
 import mysql.connector
-from mysql.connector.errors import InterfaceError
+from mysql.connector.errors import Error
 import loader as ld
 import pandas 
-connection = mysql.connector.connect(
-    host="localhost",
-    user = "root",
-    passwd = "engr4892025"
-)
-mycursor = connection.cursor()
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Establish DB connection
+try:
+    connection = mysql.connector.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        user=os.environ.get("DB_USER", "root"),
+        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        database=os.environ.get("DB_NAME", "Entities")
+    )
+    mycursor = connection.cursor()
+except Error as e:
+    print(f"Database connection error: {e}")
+    raise
+
+if not os.environ.get("DB_NAME"):
+    print("⚠️  Warning: DB_NAME not set in .env or environment.")
+
 # Remove below if havent created
 #ld.use_db(mycursor, "Overviews_Candidate_Donations_By_Year")
 
@@ -141,3 +157,6 @@ def full_load_overview():
     load_csv_candidate_donations_14("candidate_csv/2014_candidate_donations.csv", "2014")
     load_csv_candidate_donations_11("candidate_csv/2011_candidate_donations.csv", "2011")
     connection.commit()
+
+if __name__ == "__main__":
+    full_load_overview()
