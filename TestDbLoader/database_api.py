@@ -1,19 +1,28 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
+from mysql.connector import Error
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv() 
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://kng-04.github.io"}}) 
 
 def get_db_connection():
-    connection = mysql.connector.connect(
-        host=os.environ.get("DB_HOST"),
-        user=os.environ.get("DB_USER"),
-        passwd=os.environ.get("DB_PASSWORD"),
-        database=os.environ.get("DB_NAME"),
-    )
-    return connection
+    try:
+        connection = mysql.connector.connect(
+            host=os.getenv("DB_HOST", "localhost"),
+            user=os.getenv("DB_USER", "root"),
+            password=os.getenv("DB_PASSWORD", ""),
+            database=os.getenv("DB_NAME", "Entities"),
+        )
+        return connection
+    except Error as e:
+        print(f"Error connecting to database: {e}")
+        return None
 
 @app.route('/candidates', methods=['GET'])
 def get_candidates():

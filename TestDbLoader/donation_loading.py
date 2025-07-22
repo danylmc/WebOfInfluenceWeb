@@ -1,19 +1,29 @@
 import mysql.connector
-from mysql.connector.errors import InterfaceError
+from mysql.connector import Error
 import loader as ld
 import pandas 
+import os
 import re
 from datetime import datetime
 import requests
 import json 
 import ministerial_load as ml
+import overview_loading as ol
+from dotenv import load_dotenv
 
-connection = mysql.connector.connect(
-    host="localhost",
-    user = "root",
-    passwd = "engr4892025"
-)
-mycursor = connection.cursor()
+load_dotenv()
+
+try:
+    connection = mysql.connector.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        user=os.environ.get("DB_USER", "root"),
+        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        database=os.environ.get("DB_NAME")
+    )
+    mycursor = connection.cursor()
+except Error as e:
+    print(f"Database connection error: {e}")
+    raise
 
 def create_donation_table(year):
     ld.use_db(mycursor, f"Donations_Individual")
@@ -53,7 +63,6 @@ def convert_to_mysql_date(date_str):
     except ValueError:
         return None
     
-import overview_loading as ol
 def read_donations_table(year):
     ld.use_db(mycursor, "Donations_Individual")
     file = pandas.read_csv(f"donations_csv/{year}_donor_information_for_candidate.csv")
@@ -74,11 +83,10 @@ def read_donations_table(year):
         donor_name_last = str(last_name).strip() if last_name else ""
         donor_id = check_donor_id(donor_name_first.upper(), donor_name_last.upper())
         minister_donated_id = row[f'_{year}CandidateDonations_Id'] if pandas.notna(row[f'_{year}CandidateDonations_Id']) else ""
-        mycursor.execute(f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview WHERE original_id = {minister_donated_id}")
-        result_id = mycursor.fetchone()
-        if not result_id:
-            continue
-        mycursor.execute(f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview WHERE original_id = {minister_donated_id}")
+        mycursor.execute(f"""
+            SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview
+            WHERE original_id = %s
+        """, (minister_donated_id,))
         result = mycursor.fetchall()
         if not result:
             continue
@@ -107,7 +115,10 @@ def read_donations_table_23():
         donor_name_last = str(last_name).strip() if last_name else ""
         donor_id = check_donor_id(donor_name_first.upper(), donor_name_last.upper())
         minister_donated_id = row[f'CandidateDonations2023Test_Id'] if pandas.notna(row[f'CandidateDonations2023Test_Id']) else ""
-        mycursor.execute(f"SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview WHERE original_id = {minister_donated_id}")
+        mycursor.execute(f"""
+            SELECT * FROM Overviews_Candidate_Donations_By_Year.{year}_Candidate_Donation_Overview
+            WHERE original_id = %s
+        """, (minister_donated_id,))
         result = mycursor.fetchall()
         if not result:
             continue
