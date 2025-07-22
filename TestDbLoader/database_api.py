@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv() 
+print("Loaded DB_NAME:", os.getenv("DB_NAME"))
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://kng-04.github.io"}}) 
@@ -17,7 +18,7 @@ def get_db_connection():
             host=os.getenv("DB_HOST", "localhost"),
             user=os.getenv("DB_USER", "root"),
             password=os.getenv("DB_PASSWORD", ""),
-            database=os.getenv("DB_NAME", "Entities"),
+            database=os.getenv("DB_NAME"),
         )
         return connection
     except Error as e:
@@ -27,12 +28,21 @@ def get_db_connection():
 @app.route('/candidates', methods=['GET'])
 def get_candidates():
     connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "Failed to connect to the database"}), 500
+
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Entities.People")
-    rows = cursor.fetchall()
-    if not rows:  
-        return jsonify({"error": "not found"}), 404
-    return jsonify(rows)
+    try:
+        cursor.execute("SELECT * FROM Entities.People")
+        rows = cursor.fetchall()
+        if not rows:
+            return jsonify({"error": "not found"}), 404
+        return jsonify(rows)
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.route('/party', methods=['GET'])
 def get_parties():

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+print("Loaded DB_NAME:", os.getenv("DB_NAME"))
 
 # Establish DB connection
 try:
@@ -14,7 +15,7 @@ try:
         host=os.environ.get("DB_HOST", "localhost"),
         user=os.environ.get("DB_USER", "root"),
         passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
-        database=os.environ.get("DB_NAME", "Entities")
+        database=os.environ.get("DB_NAME")
     )
     mycursor = connection.cursor()
 except Error as e:

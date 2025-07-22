@@ -11,8 +11,11 @@ import ministerial_load as ml
 import overview_loading as ol
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load environment variables from .env file
+load_dotenv() 
+print("Loaded DB_NAME:", os.getenv("DB_NAME"))
 
+# Establish DB connection
 try:
     connection = mysql.connector.connect(
         host=os.environ.get("DB_HOST", "localhost"),
