@@ -1,21 +1,57 @@
 import mysql.connector
-from mysql.connector.errors import InterfaceError
+from mysql.connector import Error
+from dotenv import load_dotenv
 import loader as ld
 import pandas 
-connection = mysql.connector.connect(
-    host="localhost",
-    user = "root",
-    passwd = "engr4892025"
-)
+import os
 
+# Load environment variables
+load_dotenv()
 
-mycursor = connection.cursor()
-# Remove below if havent created
-# ld.use_db(mycursor, "Entities")
+# Establish DB connection
+try:
+    connection = mysql.connector.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        user=os.environ.get("DB_USER", "root"),
+        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        database=os.environ.get("DB_NAME", "Entities")
+    )
+    mycursor = connection.cursor()
+except Error as e:
+    print(f"Database connection error: {e}")
+    raise
 
+# Use Entities DB - Remove below if havent created
+ld.use_db(mycursor, "Entities")
+
+# === Table Creation ===
 def create_people_table():
-    ld.create_tb(mycursor, "People", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "first_name": "VARCHAR(255)", "last_name": "VARCHAR(255)"})
+    ld.create_tb(mycursor, "People", {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY", 
+        "first_name": "VARCHAR(255)", 
+        "last_name": "VARCHAR(255)"
+    })
+    
+def create_party_table():
+    ld.create_tb(mycursor, "Parties", {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY", 
+        "party_name": "VARCHAR(255)"
+    })
 
+def create_electorate_table():
+    ld.create_tb(mycursor, "Electorates", {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY", 
+        "electorate_name": "VARCHAR(255)"
+    })
+
+def create_donor_table():
+    ld.create_tb(mycursor, "Donors", {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY", 
+        "first_name": "VARCHAR(255)", 
+        "last_name": "VARCHAR(255)"
+    })
+
+# === People Loading ===
 def load_csv_people_23_17_14_11(cursor, file):
     file = pandas.read_csv(file)
     for index, row in file.iterrows():
@@ -44,9 +80,7 @@ def populate_people_table():
     load_csv_people_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
 
-def create_party_table():
-    ld.create_tb(mycursor, "Parties", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "party_name": "VARCHAR(255)"})
-
+# === Party Loading ===
 def load_csv_party_23_17_14_11(cursor, file):
     file = pandas.read_csv(file)
     for index, row in file.iterrows():
@@ -78,18 +112,16 @@ def populate_party_table():
 
 
 def clean_parties():
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'GREENS'")
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'MANA MOVEMENT'")
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'LABOUR'")
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'THE OPPORTUNITIES PARTY (TOP)'")
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'NZ FIRST'")
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'MAORI PARTY'")
-    mycursor.execute("DELETE FROM Parties WHERE party_name = 'ACT NEW ZEALAND'")
+    to_remove = [
+        'GREENS', 'MANA MOVEMENT', 'LABOUR',
+        'THE OPPORTUNITIES PARTY (TOP)',
+        'NZ FIRST', 'MAORI PARTY', 'ACT NEW ZEALAND'
+    ]
+    for party in to_remove:
+        mycursor.execute("DELETE FROM Parties WHERE party_name = %s", (party,))
     connection.commit()
 
-def create_electorate_table():
-    ld.create_tb(mycursor, "Electorates", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "electorate_name": "VARCHAR(255)"})
-
+# === Electorate Loading ===
 def load_csv_electorate_23_17_14_11(cursor, file):
     file = pandas.read_csv(file)
     for index, row in file.iterrows():
@@ -118,6 +150,7 @@ def populate_electorate_table():
     load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
     connection.commit()
 
+# === Full Loader ===
 def create_db():
     ld.create_db(mycursor, "Entities")
     connection.commit()
@@ -144,9 +177,3 @@ def full_load_entities():
     create_donor_table()
 
     connection.commit()
-
-
-
-def create_donor_table():
-    ld.create_tb(mycursor, "Donors", {"id": "INT AUTO_INCREMENT PRIMARY KEY", "first_name": "VARCHAR(255)", "last_name": "VARCHAR(255)"})
-
