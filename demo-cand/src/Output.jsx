@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ResponsivePagination from 'react-responsive-pagination';
 import 'react-responsive-pagination/themes/bootstrap.css';
+import { API_BASE } from './apiConfig';
 
 class Entry {
     constructor(people_id, party_id, electorate_id, total_expenses, total_donations, election_year) {
@@ -15,13 +16,13 @@ class Entry {
 
 const fetchAdditionalDetails = async (result) => {
     try {
-        const personResponse = await fetch(`http://127.0.0.1:5000/candidates/search-id?people_id=${result.people_id}`);
+        const personResponse = await fetch(`${API_BASE}/candidates/search-id?people_id=${result.people_id}`);
         const personData = await personResponse.json();
 
-        const partyResponse = await fetch(`http://127.0.0.1:5000/party/search-id?party_id=${result.party_id}`);
+        const partyResponse = await fetch(`${API_BASE}/party/search-id?party_id=${result.party_id}`);
         const partyData = await partyResponse.json();
 
-        const electorateResponse = await fetch(`http://127.0.0.1:5000/electorate/search-id?electorate_id=${result.electorate_id}`);
+        const electorateResponse = await fetch(`${API_BASE}/electorate/search-id?electorate_id=${result.electorate_id}`);
         const electorateData = await electorateResponse.json();
 
         return {

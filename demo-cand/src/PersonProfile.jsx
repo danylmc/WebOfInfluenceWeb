@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './PersonProfile.css'; 
+import './PersonProfile.css';
+import { API_BASE } from './apiConfig';
 
 const PersonProfile = () => {
   const { firstName, lastName } = useParams();
@@ -19,12 +20,12 @@ const PersonProfile = () => {
       setIsLoading(true);
       try {
         const personResponse = await fetch(
-          `http://127.0.0.1:5000/candidates/search?first_name=${firstName}&last_name=${lastName}`
+          `${API_BASE}/candidates/search?first_name=${firstName}&last_name=${lastName}`
         );
         const personData = await personResponse.json();
 
         const donationsResponse = await fetch(
-          `http://127.0.0.1:5000/donations/${selectedYear}?first_name=${firstName}&last_name=${lastName}`
+          `${API_BASE}/donations/${selectedYear}?first_name=${firstName}&last_name=${lastName}`
         );
         const donationsData = await donationsResponse.json();
 
@@ -33,7 +34,7 @@ const PersonProfile = () => {
         for (const donation of donationsData) {
           try {
             const donorResponse = await fetch(
-              `http://127.0.0.1:5000/donor/search-id?donor_id=${donation.donor_id}`
+              `${API_BASE}/donor/search-id?donor_id=${donation.donor_id}`
             );
             const donorData = await donorResponse.json();
 
@@ -54,7 +55,7 @@ const PersonProfile = () => {
 
         // Fetch meetings
         const meetingsResponse = await fetch(
-          `http://127.0.0.1:5000/ministerial_diaries/search-cand?first_name=${firstName}&last_name=${lastName}`
+          `${API_BASE}/ministerial_diaries/search-cand?first_name=${firstName}&last_name=${lastName}`
         );
         const meetingsData = await meetingsResponse.json();
 

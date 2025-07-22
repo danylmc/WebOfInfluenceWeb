@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Output from './Output.jsx';
 import { useNavigate } from 'react-router-dom';
 import BarChart from './BarChart.jsx';
+import { API_BASE } from './apiConfig';
 
 function CandidateOverview() {
     const [searchQuery, setSearchQuery] = useState({
@@ -64,7 +65,7 @@ function CandidateOverview() {
                 if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
 
                 const response = await fetch(
-                    `http://127.0.0.1:5000/candidates/election-overview/${year}/search/combined?${params.toString()}`
+                    `${API_BASE}/candidates/election-overview/${year}/search/combined?${params.toString()}`
                 );
 
                 if (response.ok) {

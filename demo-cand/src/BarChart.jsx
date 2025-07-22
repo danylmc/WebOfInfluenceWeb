@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, elements } from 'chart.js';
+import { API_BASE } from './apiConfig';
 
 ChartJS.register(
   CategoryScale,
@@ -25,9 +26,9 @@ const BarChart = ({ results }) => {
 
   const fetchCandidateInfo = async (people_id, party_id, year) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/candidates/search-id?people_id=${people_id}`);
+      const response = await fetch(`${API_BASE}/candidates/search-id?people_id=${people_id}`);
       const data = await response.json();
-      const response2 = await fetch(`http://127.0.0.1:5000/party/search-id?party_id=${party_id}`);
+      const response2 = await fetch(`${API_BASE}/party/search-id?party_id=${party_id}`);
       const data2 = await response2.json();
       const party_n = data2[0]?.party_name || 'Unknown';
       return {

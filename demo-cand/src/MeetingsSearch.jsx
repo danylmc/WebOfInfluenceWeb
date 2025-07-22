@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import MeetingsTable from './MeetingsTable';
 import './MeetingsSearch.css';
+import { API_BASE } from './apiConfig';
+
 
 const MeetingsSearch = () => {
   const [searchQuery, setSearchQuery] = useState({
@@ -38,7 +40,7 @@ const MeetingsSearch = () => {
       });
 
       const response = await fetch(
-        `http://127.0.0.1:5000/ministerial_diaries/search-cand-filter?${params.toString()}`
+        `${API_BASE}/ministerial_diaries/search-cand-filter?${params.toString()}`
       );
 
       if (response.ok) {

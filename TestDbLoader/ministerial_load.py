@@ -5,7 +5,7 @@ import pandas
 import re
 from datetime import datetime
 import requests
-import json 
+import json
 
 connection = mysql.connector.connect(
     host="localhost",
@@ -60,7 +60,7 @@ def get_location(location_string):
 import requests
 
 def search_ministers(params):
-    url = "http://127.0.0.1:5000/candidates/search"
+    url = "https://webofinfluenceresearch.onrender.com/candidates/search"
     response = requests.get(url, params=params)
     try:
         data = response.json()  
