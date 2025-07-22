@@ -1,5 +1,7 @@
 # Getting a temp URL
 ## Setup
+- Run run.py
+- Run database_api.py
 - brew install ngrok
 - ngrok config add-authtoken 2y2PcL2Xmq5exZo3yupTfLNkIam_3SRJx4ThhzMnXPgrXeE99
 - cd demo-cand
