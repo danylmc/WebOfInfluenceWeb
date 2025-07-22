@@ -1,7 +1,22 @@
+# macOS
 .DS_Store
+
+# Node
 node_modules/
 package-lock.json
-package.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment and config
+.env
+
+# Optional: VSCode settings, Python virtual envs, etc.
+.vscode/
+*.log
+.env.*
+.venv/
 
 node_modules/.package-lock.json
 node_modules/@kurkle/color/LICENSE.md
