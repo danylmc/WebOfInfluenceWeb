@@ -1,18 +1,31 @@
 import mysql.connector
-from mysql.connector.errors import InterfaceError
+from mysql.connector import Error
 import loader as ld
 import pandas 
 import re
-from datetime import datetime
 import requests
+from datetime import datetime
 import json
+import os
+from dotenv import load_dotenv
 
-connection = mysql.connector.connect(
-    host="localhost",
-    user = "root",
-    passwd = "engr4892025"
-)
-mycursor = connection.cursor()
+load_dotenv()
+
+try:
+    connection = mysql.connector.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        user=os.environ.get("DB_USER", "root"),
+        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        database=os.environ.get("DB_NAME")
+    )
+    mycursor = connection.cursor()
+except Error as e:
+    print(f"Database connection error: {e}")
+    raise
+
+if not os.environ.get("DB_NAME"):
+    print("⚠️  Warning: DB_NAME not set in environment or .env file.")
+
 
 # Time normaliser 
 def get_time_tuple(time_string):
@@ -25,9 +38,9 @@ def get_time_tuple(time_string):
     time_1200_format = []
 
     for time in time_matches:
-        time = time.strip()
-        if time[-2:] not in ["AM", "PM"]:
-            time = time[:-2] + " " + time[-2:]
+        time = time.replace(" ", "").upper()
+        if "AM" in time or "PM" in time:
+            time = time.replace("AM", " AM").replace("PM", " PM")
         try:
             time_obj = datetime.strptime(time, "%I:%M %p")
             time_1200_format.append(time_obj.strftime("%H%M"))
@@ -56,8 +69,6 @@ def get_location(location_string):
     if location_string in wellington_based:
         return 'Wellington'
     return location_string
-
-import requests
 
 def search_ministers(params):
     url = "https://webofinfluenceresearch.onrender.com/candidates/search"
@@ -204,8 +215,6 @@ def extract_first_last_tuple(file_id):
     first, last = name_part.split("_")
     return (first, last)
 
-from datetime import datetime
-
 def normalize_date(date_string):
     try:
         return datetime.strptime(date_string, "%m/%d/%Y").strftime("%Y-%m-%d")
@@ -232,3 +241,8 @@ def create_meeting_link_table():
     
     ld.create_tb(mycursor, "Meeting_Link", column_dict, foreign_keys)
 """
+
+if __name__ == "__main__":
+    create_db()
+    load_meetings()
+    read_meeting_file("ANDREW_HOGGARD", "APROCT24")
