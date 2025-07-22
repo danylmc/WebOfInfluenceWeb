@@ -8,7 +8,7 @@ import MeetingsSearch from './MeetingsSearch.jsx';
 import PersonProfile from './PersonProfile.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <Router>
+  <Router basename="/WebOfInfluenceResearch">
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/candidate-overview" element={<CandidateOverview />} />
@@ -17,6 +17,4 @@ createRoot(document.getElementById('root')).render(
     </Routes>
   </Router>
 );
-     
-        
-          
+  

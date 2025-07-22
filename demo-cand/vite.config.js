@@ -13,6 +13,7 @@ import react from '@vitejs/plugin-react'
 
 /* using github pages */
 export default defineConfig({
-  base: '/WebOfInfluenceResearch/',
   plugins: [react()],
+  //base: '/', // working
+  base: '/WebOfInfluenceResearch/'
 })
