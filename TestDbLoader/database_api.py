@@ -1,16 +1,17 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
+import os
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, resources={r"/*": {"origins": "https://kng-04.github.io"}}) 
 
 def get_db_connection():
     connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="engr4892025",
-        unix_socket="/tmp/mysql.sock",
+        host=os.environ.get("DB_HOST"),
+        user=os.environ.get("DB_USER"),
+        passwd=os.environ.get("DB_PASSWORD"),
+        database=os.environ.get("DB_NAME"),
     )
     return connection
 
@@ -385,4 +386,4 @@ def search_ministerial_diaries():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
