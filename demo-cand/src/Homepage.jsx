@@ -19,9 +19,20 @@ const HomePage = () => {
     }
   };
 
+  //Handld logout functionality
+  const handleLogout = () => {
+    navigate('/'); // Redirect to login page
+  };
+
   return (
     <div className="container">
-      <h1 className="title">Web of Influence Research Homepage</h1>
+      {/* Top bar with logout button */}
+      <div className="top-bar">
+        <h1 className="title">Web of Influence Research Homepage</h1>
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
+      </div>
 
       <div className="main-options">
         <Link to="/candidate-overview" className="button">
