@@ -68,7 +68,7 @@ const MeetingsSearch = () => {
       <div className="header-row">
         <h2 className="text-2xl font-bold">Search Ministerial Meetings</h2>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
         >
          ←  Back to Home

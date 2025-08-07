@@ -22,7 +22,7 @@ function CandidateOverview() {
     const [processsedResults, setProcessedResults] = useState( []);
 
     const navigate = useNavigate();
-    const handleBackToHome = () => navigate('/');
+    const handleBackToHome = () => navigate('/home');
 
     const handleSearchChange = (event) => {
         const { name, value } = event.target;
