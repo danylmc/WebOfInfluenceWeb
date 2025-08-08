@@ -3,22 +3,33 @@ from flask_cors import CORS
 import mysql.connector
 from mysql.connector import Error
 import os
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv() 
-print("Loaded DB_NAME:", os.getenv("DB_NAME"))
+from pathlib import Path
+from dotenv import load_dotenv, find_dotenv
 
+# --- Path setup ---
+load_dotenv(find_dotenv())
+
+# Define the root directory and CSV data directory
+REPO_ROOT = Path(__file__).resolve().parents[0]
+CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
+
+# Ensure the csv_data directory exists
+def csv_path(*parts: str) -> Path:
+    return (CSV_ROOT.joinpath(*parts)).resolve()
+
+
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://kng-04.github.io"}}) 
+CORS(app)
 
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            host=os.getenv("DB_HOST", "localhost"),
-            user=os.getenv("DB_USER", "root"),
-            password=os.getenv("DB_PASSWORD", ""),
-            database=os.getenv("DB_NAME"),
+            host=os.environ.get("DB_HOST", "localhost"),
+            user=os.environ.get("DB_USER", "root"),
+            password=os.environ.get("DB_PASSWORD", "engr4892025"),
+            database=os.environ.get("DB_NAME")
         )
         return connection
     except Error as e:
