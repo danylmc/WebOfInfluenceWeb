@@ -54,6 +54,7 @@ const HomePage = () => {
         </p>
       </div>
 
+      {/* 
       <div className="search-section">
         <input
           type="text"
@@ -72,7 +73,7 @@ const HomePage = () => {
         <button onClick={handleSearchSubmit} className="search-button">
           Search Profile
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
