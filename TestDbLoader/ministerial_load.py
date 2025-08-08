@@ -82,7 +82,8 @@ def get_location(location_string):
     return location_string
 
 def search_ministers(params):
-    url = "https://webofinfluenceresearch.onrender.com/candidates/search"
+    base_url = os.environ.get("API_BASE_URL", "http://127.0.0.1:5050")
+    url = f"{base_url}/candidates/search"
     response = requests.get(url, params=params)
     try:
         data = response.json()  
