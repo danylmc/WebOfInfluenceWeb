@@ -419,4 +419,12 @@ def health():
     return "API is running!"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5050)))
+    # Default settings for local development
+    host = "127.0.0.1"
+    port = int(os.environ.get("PORT", 5050))
+
+    # If explicitly told to bind to all interfaces
+    if os.environ.get("FLASK_ENV") == "production":
+        host = "0.0.0.0"
+
+    app.run(host=host, port=port, debug=os.environ.get("FLASK_ENV") != "production")
