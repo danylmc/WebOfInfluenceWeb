@@ -107,6 +107,17 @@ function CandidateOverview() {
         setIsLoading(false);
     };
 
+    // add this helper
+    const handleReset = () => {
+        setSearchQuery({ firstName: '', lastName: '', party: '', electorate: '' });
+        setSelectedYears({ 2023: true, 2017: false, 2014: false, 2011: false });
+        setResults([]);
+        setProcessedResults(null);
+        setError(null);
+        setHasSearched(false);
+    };
+
+
     const handleExportCSV = (processedResults) => {
         if (!processedResults || processedResults.length === 0) {
             alert('No data to export');
@@ -160,10 +171,18 @@ function CandidateOverview() {
         <div className="page-wrapper">
             <div className="candidate-wrapper">
                 <div className="candidate-inner">
+
+                    {/* Header Row */}
                     <div className="header-row">
-                        <h2>Filter by Year</h2>
-                        <button onClick={handleBackToHome}> 
-                            ←  Back to Home</button>
+                        <h2>Web Of Influence Research</h2>
+                    </div>
+
+                    {/* Donations search + back home button */}
+                    <div className="donations-header-row">
+                        <h2 className="donations-search-header">Donations Search</h2>
+                        <button onClick={handleBackToHome} className="home-button"> 
+                        ← Back to Home
+                        </button>
                     </div>
 
                     {/* Year Toggle */}
@@ -181,42 +200,82 @@ function CandidateOverview() {
                     ))}
                     </div>
 
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '1.5rem 0 0.5rem' }}>
-                        Search Filters
-                    </h3>
+                    {/* Search Filters */}
+                    <div className="filter-card">
+                        <div className="filter-card__header-row">
+                            <div className="filter-card__header">Search Filters</div>
 
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First Name"
-                        value={searchQuery.firstName}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last Name"
-                        value={searchQuery.lastName}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="party"
-                        placeholder="Party"
-                        value={searchQuery.party}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="electorate"
-                        placeholder="Electorate"
-                        value={searchQuery.electorate}
-                        onChange={handleSearchChange}
-                    />
+                            <button
+                                type="button"
+                                className="small-reset-button"
+                                onClick={handleReset}
+                            >
+                                ↺ Reset
+                            </button>
+                        </div>
 
-                    <button onClick={handleSearchSubmit} className="search-button">
-                        Search
-                    </button>
+                        {/* FirstName - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>👤</span>
+                            <input
+                            type="text"
+                            name="firstName"
+                            placeholder="First Name"
+                            value={searchQuery.firstName}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
+
+                        {/* LastName - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>👤</span>
+                            <input
+                            type="text"
+                            name="lastName"
+                            placeholder="Last Name"
+                            value={searchQuery.lastName}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
+
+                        {/* Party - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>🏛️</span>
+                            <input
+                            type="text"
+                            name="party"
+                            placeholder="Political Party"
+                            value={searchQuery.party}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
+
+                        {/* Electorate - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>📍</span>
+                            <input
+                            type="text"
+                            name="electorate"
+                            placeholder="Electorate"
+                            value={searchQuery.electorate}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Search and Reset Buttons */}
+                    <div className="actions">
+                        <button
+                            type="button"
+                            className="action-button search-button"
+                            onClick={handleSearchSubmit}
+                        > 🔍 Search
+                        </button>
+                    </div>
                 </div>
             </div>
 

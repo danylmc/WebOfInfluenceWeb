@@ -101,20 +101,13 @@ const Output = ({ results, onExportCSV }) => {
 
     return (
         <div>
-            <div className="mb-4">
+            {/* Use your shared button styles */}
+            <div className="actions">
                 <button
+                    type="button"
+                    className="export-button"
                     onClick={() => onExportCSV(processedResults)}
-                    style={{
-                        backgroundColor: 'green',
-                        color: 'white',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '0.25rem',
-                        transition: 'background-color 0.2s',
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'darkgreen')}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'green')}
-                >
-                    Export to CSV
+                > ⬇︎ Export to CSV
                 </button>
             </div>
 
