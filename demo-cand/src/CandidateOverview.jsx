@@ -6,20 +6,28 @@ import { API_BASE } from './apiConfig';
 import './CandidateOverview.css';
 
 function CandidateOverview() {
+    // State variables for search query
     const [searchQuery, setSearchQuery] = useState({
         firstName: '',
         lastName: '',
         party: '',
         electorate: '',
     });
+
+    // State to manage selected years for filtering
     const [selectedYears, setSelectedYears] = useState({
         2023: true,
         2017: false,
         2014: false,
         2011: false
     });
-    const [results, setResults] = useState([]);
-    const [processsedResults, setProcessedResults] = useState( []);
+
+    // State to manage results and processed results
+    const [results, setResults] = useState(null);
+    const [processedResults, setProcessedResults] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const navigate = useNavigate();
     const handleBackToHome = () => navigate('/home');
@@ -40,34 +48,42 @@ function CandidateOverview() {
     };
 
     const handleSearchSubmit = async () => {
+        setHasSearched(true);
+        setError(null);
+        setIsLoading(true);
+        // Reset results and processed results
+        setResults([]);
+        setProcessedResults(null);
+
+        // Filter selected years
         const activeYears = Object.keys(selectedYears).filter(year => selectedYears[year]);
 
-        if (activeYears.length === 0) {
-            setResults(['No results found']);
-            return;
-        }
-
-        const hasCriteria =
+        // Check if at least one year is selected and if there are search criteria
+        const hasCriteria = !!(
             searchQuery.firstName ||
             searchQuery.lastName ||
             searchQuery.party ||
-            searchQuery.electorate;
+            searchQuery.electorate
+        );
 
-        if (!hasCriteria) {
-            setResults(['No results found']);
+        if (activeYears.length === 0 || !hasCriteria) {
+            setIsLoading(false);
+            setResults([]);
+            setError('Pick at least one year and enter a filter.');
             return;
         }
+
+        // Prepare search parameters
+        const params = new URLSearchParams();
+        if (searchQuery.firstName) params.append('first_name', searchQuery.firstName);
+        if (searchQuery.lastName) params.append('last_name', searchQuery.lastName);
+        if (searchQuery.party) params.append('party_name', searchQuery.party);
+        if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
 
         let allResults = [];
 
         for (let year of activeYears) {
             try {
-                const params = new URLSearchParams();
-                if (searchQuery.firstName) params.append('first_name', searchQuery.firstName);
-                if (searchQuery.lastName) params.append('last_name', searchQuery.lastName);
-                if (searchQuery.party) params.append('party_name', searchQuery.party);
-                if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
-
                 const response = await fetch(
                     `${API_BASE}/candidates/election-overview/${year}/search/combined?${params.toString()}`
                 );
@@ -86,12 +102,21 @@ function CandidateOverview() {
             }
         }
 
-        if (allResults.length === 0) {
-            setResults(['No results found']);
-        } else {
-            setResults(allResults);
-        }
+        // Process results for the chart
+        setResults(allResults.length === 0 ? [] : allResults);
+        setIsLoading(false);
     };
+
+    // add this helper
+    const handleReset = () => {
+        setSearchQuery({ firstName: '', lastName: '', party: '', electorate: '' });
+        setSelectedYears({ 2023: true, 2017: false, 2014: false, 2011: false });
+        setResults([]);
+        setProcessedResults(null);
+        setError(null);
+        setHasSearched(false);
+    };
+
 
     const handleExportCSV = (processedResults) => {
         if (!processedResults || processedResults.length === 0) {
@@ -146,73 +171,129 @@ function CandidateOverview() {
         <div className="page-wrapper">
             <div className="candidate-wrapper">
                 <div className="candidate-inner">
+
+                    {/* Header Row */}
                     <div className="header-row">
-                        <h2>Filter by Year</h2>
-                        <button onClick={handleBackToHome}> 
-                            ←  Back to Home</button>
+                        <h2>Web Of Influence Research</h2>
                     </div>
 
-                    {Object.keys(selectedYears).map(year => (
-                        <div key={year} className="checkbox-wrapper">
-                            <span className="checkbox-label">{year}</span>
+                    {/* Donations search + back home button */}
+                    <div className="donations-header-row">
+                        <h2 className="donations-search-header">Donations Search</h2>
+                        <button onClick={handleBackToHome} className="home-button"> 
+                        ← Back to Home
+                        </button>
+                    </div>
+
+                    {/* Year Toggle */}
+                    <div className="year-toggle-group">
+                    {Object.keys(selectedYears).sort().map((year) => (
+                        <button
+                        key={year}
+                        type="button"
+                        className={`year-chip ${selectedYears[year] ? 'active' : ''}`}
+                        onClick={() => handleYearChange(year)}
+                        aria-pressed={selectedYears[year]}
+                        >
+                        {year}
+                        </button>
+                    ))}
+                    </div>
+
+                    {/* Search Filters */}
+                    <div className="filter-card">
+                        <div className="filter-card__header-row">
+                            <div className="filter-card__header">Search Filters</div>
+
+                            <button
+                                type="button"
+                                className="small-reset-button"
+                                onClick={handleReset}
+                            >
+                                ↺ Reset
+                            </button>
+                        </div>
+
+                        {/* FirstName - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>👤</span>
                             <input
-                                type="checkbox"
-                                checked={selectedYears[year]}
-                                onChange={() => handleYearChange(year)}
+                            type="text"
+                            name="firstName"
+                            placeholder="First Name"
+                            value={searchQuery.firstName}
+                            onChange={handleSearchChange}
+                            className="input"
                             />
                         </div>
-                    ))}
 
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '1.5rem 0 0.5rem' }}>
-                        Search Filters
-                    </h3>
+                        {/* LastName - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>👤</span>
+                            <input
+                            type="text"
+                            name="lastName"
+                            placeholder="Last Name"
+                            value={searchQuery.lastName}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
 
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First Name"
-                        value={searchQuery.firstName}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last Name"
-                        value={searchQuery.lastName}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="party"
-                        placeholder="Party"
-                        value={searchQuery.party}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="electorate"
-                        placeholder="Electorate"
-                        value={searchQuery.electorate}
-                        onChange={handleSearchChange}
-                    />
+                        {/* Party - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>🏛️</span>
+                            <input
+                            type="text"
+                            name="party"
+                            placeholder="Political Party"
+                            value={searchQuery.party}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
 
-                    <button onClick={handleSearchSubmit} className="search-button">
-                        Search
-                    </button>
+                        {/* Electorate - Search Inputs */}
+                        <div className="field">
+                            <span className="icon" aria-hidden>📍</span>
+                            <input
+                            type="text"
+                            name="electorate"
+                            placeholder="Electorate"
+                            value={searchQuery.electorate}
+                            onChange={handleSearchChange}
+                            className="input"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Search and Reset Buttons */}
+                    <div className="actions">
+                        <button
+                            type="button"
+                            className="action-button search-button"
+                            onClick={handleSearchSubmit}
+                            disabled={isLoading}
+                        > {isLoading ? 'Searching...' : '🔍 Search'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
+            {hasSearched && (
             <div className="results-section">
-                <h2>
-                    Election Candidates Overview Database Search & Filter
-                </h2>
+                <h2>Election Candidates Overview Database Search & Filter</h2>
 
-            {results && results.length > 0 && results[0] !== 'No results found' && (
+                {error && <div className="error">{error}</div>}
+                {isLoading && <div>Loading results...</div>}
+
+                {Array.isArray(results) && results.length > 0 && (
                 <Output results={results} onExportCSV={handleExportCSV} />
-            )}
+                )}
 
-            <BarChart results={results} />
+                <BarChart results={results} isLoading={isLoading} />
             </div>
+            )}
         </div>
         );
 

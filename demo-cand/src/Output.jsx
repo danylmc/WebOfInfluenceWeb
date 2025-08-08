@@ -101,21 +101,25 @@ const Output = ({ results, onExportCSV }) => {
 
     return (
         <div>
-            <div className="mb-4">
+            {/* Use your shared button styles */}
+            <div className="actions">
                 <button
+                    type="button"
+                    className="export-button"
                     onClick={() => onExportCSV(processedResults)}
-                    style={{
-                        backgroundColor: 'green',
-                        color: 'white',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '0.25rem',
-                        transition: 'background-color 0.2s',
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'darkgreen')}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'green')}
-                >
-                    Export to CSV
+                > ⬇︎ Export to CSV
                 </button>
+            </div>
+            
+            <div className="pagination-row" style={{ marginTop: '40px', marginBottom: '20px' }}>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalPages}
+                    onPageChange={handlePageChange}
+                    maxWidth={600}
+                    previousLabel={currentPage > 1 ? "Previous" : ""}
+                    nextLabel={currentPage < totalPages ? "Show more" : ""}
+                />
             </div>
 
             <table
@@ -178,17 +182,6 @@ const Output = ({ results, onExportCSV }) => {
                     ))}
                 </tbody>
             </table>
-
-            <div className="mt-4">
-                <ResponsivePagination
-                    current={currentPage}
-                    total={totalPages}
-                    onPageChange={handlePageChange}
-                    maxWidth={300}
-                    previousLabel="Previous" 
-                    nextLabel="Next"
-                />
-            </div>
         </div>
     );
 };
