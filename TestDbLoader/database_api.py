@@ -11,7 +11,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 # Define the root directory and CSV data directory
-REPO_ROOT = Path(__file__).resolve().parents[0]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
 
 # Ensure the csv_data directory exists

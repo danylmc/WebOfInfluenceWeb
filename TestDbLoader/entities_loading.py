@@ -10,7 +10,7 @@ from pathlib import Path
 load_dotenv(find_dotenv())
 
 # Define the root directory and CSV data directory
-REPO_ROOT = Path(__file__).resolve().parents[0]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
 
 # Ensure the csv_data directory exists
@@ -22,7 +22,7 @@ try:
     connection = mysql.connector.connect(
         host=os.environ.get("DB_HOST", "localhost"),
         user=os.environ.get("DB_USER", "root"),
-        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        password=os.environ.get("DB_PASSWORD", "engr4892025"),
         database=os.environ.get("DB_NAME")
     )
     mycursor = connection.cursor()
