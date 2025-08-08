@@ -51,16 +51,12 @@ function CandidateOverview() {
         setHasSearched(true);
         setError(null);
         setIsLoading(true);
-        setResults(null); 
+        // Reset results and processed results
+        setResults([]);
+        setProcessedResults(null);
 
         // Filter selected years
         const activeYears = Object.keys(selectedYears).filter(year => selectedYears[year]);
-
-        // Start loading + clear stale chart
-        setError(null);
-        setIsLoading(true);
-        setResults(null);
-
 
         // Check if at least one year is selected and if there are search criteria
         const hasCriteria = !!(

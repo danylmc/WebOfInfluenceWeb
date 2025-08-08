@@ -54,6 +54,12 @@ const BarChart = ({ results, isLoading }) => {
   };
 
   useEffect(() => {
+    // If results are empty, clear the chart
+    if (!results || results.length === 0) {
+      setChartData(null);
+      return;
+    }
+
     const fetchData = async () => {
       if (results && results.length > 0) {
         // Sort results by total_donations in descending order
