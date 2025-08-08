@@ -17,7 +17,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 # Define the root directory and CSV data directory
-REPO_ROOT = Path(__file__).resolve().parents[0]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
 
 # Ensure the csv_data directory exists
@@ -28,15 +28,19 @@ def csv_path(*parts: str) -> Path:
 # Establish DB connection
 try:
     connection = mysql.connector.connect(
-        host=os.environ.get("DB_HOST", "localhost"),
-        user=os.environ.get("DB_USER", "root"),
-        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        host=os.environ.get("DB_HOST"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
         database=os.environ.get("DB_NAME")
     )
     mycursor = connection.cursor()
 except Error as e:
     print(f"Database connection error: {e}")
     raise
+
+# Check if DB_NAME is set
+if not os.environ.get("DB_NAME"):
+    print("⚠️  Warning: DB_NAME not set in environment or .env file.")
 
 def create_donation_table(year):
     ld.use_db(mycursor, f"Donations_Individual")

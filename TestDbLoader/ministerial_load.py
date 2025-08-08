@@ -14,7 +14,7 @@ from pathlib import Path
 load_dotenv(find_dotenv())
 
 # Define the root directory and CSV data directory
-REPO_ROOT = Path(__file__).resolve().parents[0]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
 
 # Ensure the csv_data directory exists
@@ -24,9 +24,9 @@ def csv_path(*parts: str) -> Path:
 # Establish DB connection
 try:
     connection = mysql.connector.connect(
-        host=os.environ.get("DB_HOST", "localhost"),
-        user=os.environ.get("DB_USER", "root"),
-        passwd=os.environ.get("DB_PASSWORD", "engr4892025"),
+        host=os.environ.get("DB_HOST"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
         database=os.environ.get("DB_NAME")
     )
     mycursor = connection.cursor()
@@ -82,7 +82,8 @@ def get_location(location_string):
     return location_string
 
 def search_ministers(params):
-    url = "https://webofinfluenceresearch.onrender.com/candidates/search"
+    base_url = "http://127.0.0.1:5050"
+    url = f"{base_url}/candidates/search"
     response = requests.get(url, params=params)
     try:
         data = response.json()  
