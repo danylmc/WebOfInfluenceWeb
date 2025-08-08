@@ -21,7 +21,7 @@ const partyColors = {
   "NEW ZEALAND FIRST PARTY": "rgb(0, 0, 0)", // #000000
   "Unknown": "rgb(190, 190, 190)" // #BEBEBE
 };
-const BarChart = ({ results }) => {
+const BarChart = ({ results, isLoading }) => {  
   const [chartData, setChartData] = useState(null);
 
   const fetchCandidateInfo = async (people_id, party_id, year) => {
@@ -32,7 +32,7 @@ const BarChart = ({ results }) => {
       const data2 = await response2.json();
       const party_n = data2[0]?.party_name || 'Unknown';
       return {
-        name: data[0]?.first_name + ' ' + data[0]?.last_name || 'Unknown',
+        name: [data[0]?.first_name, data[0]?.last_name].filter(Boolean).join(' ') || 'Unknown',
         party: Object.keys(partyColors).includes(party_n)? party_n : 'Other',
         real_party:party_n,
         year: year
@@ -56,14 +56,19 @@ const BarChart = ({ results }) => {
   useEffect(() => {
     const fetchData = async () => {
       if (results && results.length > 0) {
-        const sortedResults = results.sort((a, b) => b.total_donations - a.total_donations);
+        // Sort results by total_donations in descending order
+        const sortedResults = [...results].sort((a, b) => (b.total_donations || 0) - (a.total_donations || 0));
 
+        // Fetch candidate info for each result
         const candidateInfo = await Promise.all(
-          sortedResults.map(async (result) => await fetchCandidateInfo(result.people_id, result.party_id, result.year))
+          sortedResults.map(result =>
+            fetchCandidateInfo(result.people_id, result.party_id, result.election_year)
+          )
         );
 
+        // Prepare chart data
         const labels = candidateInfo.map(info => `${info.name} (${info.year})`);
-        const donations = sortedResults.map(result => result.total_donations);
+        const donations = sortedResults.map(result => Number(result.total_donations ?? 0));
         const backgroundColor = candidateInfo.map(info => getPartyColor(info.party));
         
         setChartData({
@@ -86,16 +91,20 @@ const BarChart = ({ results }) => {
     fetchData();
   }, [results]);
 
-  if (!chartData) {
-    return <p>No data to display</p>;
-  }
+  // ----- Render guards -----
+  if (results === null) return null;
+  if (isLoading) return <p>Loading chart...</p>;
+  if (!Array.isArray(results) || results.length === 0) return <p>No data to display</p>;
+  if (!chartData) return null; 
 
+  // ----- Chart configuration -----
+  const count = results.length;
   // Dynamically calculate the height of the chart container
-  const containerHeight = Math.min(Math.max(400, results.length * 60), 2000);
-
+  const containerHeight = Math.min(Math.max(400, count * 60), 2000);
   // Calculate bar thickness based on number of candidates to display
-  const barThickness = Math.max(15, 100 / results.length);
+  const barThickness = Math.max(15, 100 / count);
 
+  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -109,7 +118,7 @@ const BarChart = ({ results }) => {
       tooltip: {
         callbacks: {
           label: function(context) {
-            const totalDonations = context.raw; 
+            const totalDonations = Number(context.raw ?? 0);
             const partyName = context.dataset.r_party[context.dataIndex]; 
             return [
               `Total Donations: $${totalDonations.toLocaleString()}`,

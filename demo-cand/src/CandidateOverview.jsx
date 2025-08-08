@@ -6,20 +6,28 @@ import { API_BASE } from './apiConfig';
 import './CandidateOverview.css';
 
 function CandidateOverview() {
+    // State variables for search query
     const [searchQuery, setSearchQuery] = useState({
         firstName: '',
         lastName: '',
         party: '',
         electorate: '',
     });
+
+    // State to manage selected years for filtering
     const [selectedYears, setSelectedYears] = useState({
         2023: true,
         2017: false,
         2014: false,
         2011: false
     });
-    const [results, setResults] = useState([]);
-    const [processsedResults, setProcessedResults] = useState( []);
+
+    // State to manage results and processed results
+    const [results, setResults] = useState(null);
+    const [processedResults, setProcessedResults] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const navigate = useNavigate();
     const handleBackToHome = () => navigate('/home');
@@ -40,34 +48,46 @@ function CandidateOverview() {
     };
 
     const handleSearchSubmit = async () => {
+        setHasSearched(true);
+        setError(null);
+        setIsLoading(true);
+        setResults(null); 
+
+        // Filter selected years
         const activeYears = Object.keys(selectedYears).filter(year => selectedYears[year]);
 
-        if (activeYears.length === 0) {
-            setResults(['No results found']);
-            return;
-        }
+        // Start loading + clear stale chart
+        setError(null);
+        setIsLoading(true);
+        setResults(null);
 
-        const hasCriteria =
+
+        // Check if at least one year is selected and if there are search criteria
+        const hasCriteria = !!(
             searchQuery.firstName ||
             searchQuery.lastName ||
             searchQuery.party ||
-            searchQuery.electorate;
+            searchQuery.electorate
+        );
 
-        if (!hasCriteria) {
-            setResults(['No results found']);
+        if (activeYears.length === 0 || !hasCriteria) {
+            setIsLoading(false);
+            setResults([]);
+            setError('Pick at least one year and enter a filter.');
             return;
         }
+
+        // Prepare search parameters
+        const params = new URLSearchParams();
+        if (searchQuery.firstName) params.append('first_name', searchQuery.firstName);
+        if (searchQuery.lastName) params.append('last_name', searchQuery.lastName);
+        if (searchQuery.party) params.append('party_name', searchQuery.party);
+        if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
 
         let allResults = [];
 
         for (let year of activeYears) {
             try {
-                const params = new URLSearchParams();
-                if (searchQuery.firstName) params.append('first_name', searchQuery.firstName);
-                if (searchQuery.lastName) params.append('last_name', searchQuery.lastName);
-                if (searchQuery.party) params.append('party_name', searchQuery.party);
-                if (searchQuery.electorate) params.append('electorate_name', searchQuery.electorate);
-
                 const response = await fetch(
                     `${API_BASE}/candidates/election-overview/${year}/search/combined?${params.toString()}`
                 );
@@ -86,11 +106,9 @@ function CandidateOverview() {
             }
         }
 
-        if (allResults.length === 0) {
-            setResults(['No results found']);
-        } else {
-            setResults(allResults);
-        }
+        // Process results for the chart
+        setResults(allResults.length === 0 ? [] : allResults);
+        setIsLoading(false);
     };
 
     const handleExportCSV = (processedResults) => {
@@ -202,17 +220,20 @@ function CandidateOverview() {
                 </div>
             </div>
 
+            {hasSearched && (
             <div className="results-section">
-                <h2>
-                    Election Candidates Overview Database Search & Filter
-                </h2>
+                <h2>Election Candidates Overview Database Search & Filter</h2>
 
-            {results && results.length > 0 && results[0] !== 'No results found' && (
+                {error && <div className="error">{error}</div>}
+                {isLoading && <div>Loading results...</div>}
+
+                {Array.isArray(results) && results.length > 0 && (
                 <Output results={results} onExportCSV={handleExportCSV} />
-            )}
+                )}
 
-            <BarChart results={results} />
+                <BarChart results={results} isLoading={isLoading} />
             </div>
+            )}
         </div>
         );
 
