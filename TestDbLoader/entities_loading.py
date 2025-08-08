@@ -1,13 +1,21 @@
 import mysql.connector
 from mysql.connector import Error
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import loader as ld
 import pandas 
 import os
+from pathlib import Path
 
-# Load environment variables
-load_dotenv()
-print("Loaded DB_NAME:", os.getenv("DB_NAME"))
+# --- Path setup ---
+load_dotenv(find_dotenv())
+
+# Define the root directory and CSV data directory
+REPO_ROOT = Path(__file__).resolve().parents[0]
+CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
+
+# Ensure the csv_data directory exists
+def csv_path(*parts: str) -> Path:
+    return (CSV_ROOT.joinpath(*parts)).resolve()
 
 # Establish DB connection
 try:
@@ -74,11 +82,11 @@ def load_csv_people_20(cursor, file):
             ld.import_data(connection, cursor, "People", ("first_name", "last_name"), (row['FIRST NAME(S)'].upper(), row['SURNAME'].upper()))
 
 def populate_people_table():
-    load_csv_people_23_17_14_11(mycursor, "candidate_csv/2011_candidate_donations.csv")
-    load_csv_people_23_17_14_11(mycursor, "candidate_csv/2014_candidate_donations.csv")
-    load_csv_people_23_17_14_11(mycursor, "candidate_csv/2017_candidate_donations.csv")
-    load_csv_people_20(mycursor, "candidate_csv/2020_candidate_donations.csv")
-    load_csv_people_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
+    load_csv_people_23_17_14_11(mycursor, csv_path("candidate_csv", "2011_candidate_donations.csv"))
+    load_csv_people_23_17_14_11(mycursor, csv_path("candidate_csv", "2014_candidate_donations.csv"))
+    load_csv_people_23_17_14_11(mycursor, csv_path("candidate_csv", "2017_candidate_donations.csv"))
+    load_csv_people_20(mycursor, csv_path("candidate_csv", "2020_candidate_donations.csv"))
+    load_csv_people_23_17_14_11(mycursor, csv_path("candidate_csv", "2023_candidate_donations.csv"))
     connection.commit()
 
 # === Party Loading ===
@@ -104,13 +112,12 @@ def load_csv_party_20(cursor, file):
             ld.import_data(connection, cursor, "Parties", ("party_name",), ((row['PARTY']).upper(),))
 
 def populate_party_table():
-    load_csv_party_23_17_14_11(mycursor, "candidate_csv/2011_candidate_donations.csv")
-    load_csv_party_23_17_14_11(mycursor, "candidate_csv/2014_candidate_donations.csv")
-    load_csv_party_23_17_14_11(mycursor, "candidate_csv/2017_candidate_donations.csv")
-    load_csv_party_20(mycursor, "candidate_csv/2020_candidate_donations.csv")
-    load_csv_party_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
+    load_csv_party_23_17_14_11(mycursor, csv_path("candidate_csv", "2011_candidate_donations.csv"))
+    load_csv_party_23_17_14_11(mycursor, csv_path("candidate_csv", "2014_candidate_donations.csv"))
+    load_csv_party_23_17_14_11(mycursor, csv_path("candidate_csv", "2017_candidate_donations.csv"))
+    load_csv_party_20(mycursor, csv_path("candidate_csv", "2020_candidate_donations.csv"))
+    load_csv_party_23_17_14_11(mycursor, csv_path("candidate_csv", "2023_candidate_donations.csv"))
     connection.commit()
-
 
 def clean_parties():
     to_remove = [
@@ -144,11 +151,11 @@ def load_csv_electorate_20(cursor, file):
             ld.import_data(connection, cursor, "Electorates", ("electorate_name", ), ((row['ELECTORATE']).upper(), ))
 
 def populate_electorate_table():
-    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2011_candidate_donations.csv")
-    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2014_candidate_donations.csv")
-    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2017_candidate_donations.csv")
-    load_csv_electorate_20(mycursor, "candidate_csv/2020_candidate_donations.csv")
-    load_csv_electorate_23_17_14_11(mycursor, "candidate_csv/2023_candidate_donations.csv")
+    load_csv_electorate_23_17_14_11(mycursor, csv_path("candidate_csv", "2011_candidate_donations.csv"))
+    load_csv_electorate_23_17_14_11(mycursor, csv_path("candidate_csv", "2014_candidate_donations.csv"))
+    load_csv_electorate_23_17_14_11(mycursor, csv_path("candidate_csv", "2017_candidate_donations.csv"))
+    load_csv_electorate_20(mycursor, csv_path("candidate_csv", "2020_candidate_donations.csv"))
+    load_csv_electorate_23_17_14_11(mycursor, csv_path("candidate_csv", "2023_candidate_donations.csv"))
     connection.commit()
 
 # === Full Loader ===

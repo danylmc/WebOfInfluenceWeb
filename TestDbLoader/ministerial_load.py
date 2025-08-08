@@ -7,11 +7,19 @@ import requests
 from datetime import datetime
 import json
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
 
-# Load environment variables from .env file
-load_dotenv() 
-print("Loaded DB_NAME:", os.getenv("DB_NAME"))
+# --- Path setup ---
+load_dotenv(find_dotenv())
+
+# Define the root directory and CSV data directory
+REPO_ROOT = Path(__file__).resolve().parents[0]
+CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
+
+# Ensure the csv_data directory exists
+def csv_path(*parts: str) -> Path:
+    return (CSV_ROOT.joinpath(*parts)).resolve()
 
 # Establish DB connection
 try:
@@ -192,7 +200,13 @@ def load_meeting(date, time_string, location, notes, portfolio, title, m_type, a
 
 def read_meeting_file(file_id, period_from):
     ld.use_db(mycursor, "Ministerial_Meetings")
-    file = pandas.read_csv(f"diaries_csv/{period_from}/{file_id}.csv")
+
+    # Ensure the CSV file exists
+    file = pandas.read_csv(
+        csv_path("diaries_csv", period_from, f"{file_id}.csv"),
+        dtype=str, keep_default_na=True
+    )
+
     for index, row in file.iterrows():
         date = normalize_date(row["Date or Date Started"])
         time = row["Schedule Time"]
@@ -224,11 +238,7 @@ def normalize_date(date_string):
     except ValueError:
         raise ValueError(f"Invalid date format: {date_string}")
 
-
-create_db()
-load_meetings()
-read_meeting_file("ANDREW_HOGGARD", "APROCT24")
-
+# === Meeting Link Table Creation ===
 """ 
 For when data is segmented with multiple people for who met with
 def create_meeting_link_table():

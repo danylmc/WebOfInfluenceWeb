@@ -9,11 +9,21 @@ import requests
 import json 
 import ministerial_load as ml
 import overview_loading as ol
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv() 
-print("Loaded DB_NAME:", os.getenv("DB_NAME"))
+from pathlib import Path
+from dotenv import load_dotenv, find_dotenv
+
+# --- Path setup ---
+load_dotenv(find_dotenv())
+
+# Define the root directory and CSV data directory
+REPO_ROOT = Path(__file__).resolve().parents[0]
+CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
+
+# Ensure the csv_data directory exists
+def csv_path(*parts: str) -> Path:
+    return (CSV_ROOT.joinpath(*parts)).resolve()
+
 
 # Establish DB connection
 try:
@@ -68,7 +78,13 @@ def convert_to_mysql_date(date_str):
     
 def read_donations_table(year):
     ld.use_db(mycursor, "Donations_Individual")
-    file = pandas.read_csv(f"donations_csv/{year}_donor_information_for_candidate.csv")
+
+    # Ensure the CSV file exists
+    file = pandas.read_csv(
+        csv_path("donations_csv", f"{year}_donor_information_for_candidate.csv"),
+        dtype=str, keep_default_na=True
+    )
+
     for index, row in file.iterrows():
         date = convert_to_mysql_date(row['DateReceived'])
         amount = ol.clean_dollar_value(row['DonationAmount']) if pandas.notna(row['DonationAmount']) else 0
@@ -100,7 +116,13 @@ def read_donations_table(year):
 def read_donations_table_23():
     year = "2023"
     ld.use_db(mycursor, "Donations_Individual")
-    file = pandas.read_csv(f"donations_csv/{year}_donor_information_for_candidate.csv")
+
+    # Ensure the CSV file exists
+    file = pandas.read_csv(
+        csv_path("donations_csv", f"{year}_donor_information_for_candidate.csv"),
+        dtype=str, keep_default_na=True
+    )
+
     for index, row in file.iterrows():
         date = convert_to_mysql_date(row['DateReceived'])
         amount = ol.clean_dollar_value(row['DonationAmount']) if pandas.notna(row['DonationAmount']) else 0
