@@ -166,16 +166,20 @@ function CandidateOverview() {
                             ←  Back to Home</button>
                     </div>
 
-                    {Object.keys(selectedYears).map(year => (
-                        <div key={year} className="checkbox-wrapper">
-                            <span className="checkbox-label">{year}</span>
-                            <input
-                                type="checkbox"
-                                checked={selectedYears[year]}
-                                onChange={() => handleYearChange(year)}
-                            />
-                        </div>
+                    {/* Year Toggle */}
+                    <div className="year-toggle-group">
+                    {Object.keys(selectedYears).sort().map((year) => (
+                        <button
+                        key={year}
+                        type="button"
+                        className={`year-chip ${selectedYears[year] ? 'active' : ''}`}
+                        onClick={() => handleYearChange(year)}
+                        aria-pressed={selectedYears[year]}
+                        >
+                        {year}
+                        </button>
                     ))}
+                    </div>
 
                     <h3 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '1.5rem 0 0.5rem' }}>
                         Search Filters
