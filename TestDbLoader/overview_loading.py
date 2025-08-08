@@ -3,11 +3,19 @@ from mysql.connector.errors import Error
 import loader as ld
 import pandas 
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
 
-# Load environment variables
-load_dotenv()
-print("Loaded DB_NAME:", os.getenv("DB_NAME"))
+# --- Path setup ---
+load_dotenv(find_dotenv())
+
+# Define the root directory and CSV data directory
+REPO_ROOT = Path(__file__).resolve().parents[0]
+CSV_ROOT = (REPO_ROOT / "csv_data").resolve()
+
+# Ensure the csv_data directory exists
+def csv_path(*parts: str) -> Path:
+    return (CSV_ROOT.joinpath(*parts)).resolve()
 
 # Establish DB connection
 try:
@@ -153,10 +161,10 @@ def full_load_overview():
     create_election_year_candidates_table("2017_Candidate_Donation_Overview")
     create_election_year_candidates_table("2014_Candidate_Donation_Overview")
     create_election_year_candidates_table("2011_Candidate_Donation_Overview")
-    load_csv_candidate_donations_23("candidate_csv/2023_candidate_donations.csv", "2023")
-    load_csv_candidate_donations_17("candidate_csv/2017_candidate_donations.csv", "2017")
-    load_csv_candidate_donations_14("candidate_csv/2014_candidate_donations.csv", "2014")
-    load_csv_candidate_donations_11("candidate_csv/2011_candidate_donations.csv", "2011")
+    load_csv_candidate_donations_23(csv_path("candidate_csv", "2023_candidate_donations.csv"), "2023")
+    load_csv_candidate_donations_17(csv_path("candidate_csv", "2017_candidate_donations.csv"), "2017")
+    load_csv_candidate_donations_14(csv_path("candidate_csv", "2014_candidate_donations.csv"), "2014")
+    load_csv_candidate_donations_11(csv_path("candidate_csv", "2011_candidate_donations.csv"), "2011")
     connection.commit()
 
 if __name__ == "__main__":
