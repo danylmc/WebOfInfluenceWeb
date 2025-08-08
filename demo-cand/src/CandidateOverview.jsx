@@ -273,7 +273,8 @@ function CandidateOverview() {
                             type="button"
                             className="action-button search-button"
                             onClick={handleSearchSubmit}
-                        > 🔍 Search
+                            disabled={isLoading}
+                        > {isLoading ? 'Searching...' : '🔍 Search'}
                         </button>
                     </div>
                 </div>
