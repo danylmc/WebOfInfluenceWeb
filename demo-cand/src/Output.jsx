@@ -110,6 +110,17 @@ const Output = ({ results, onExportCSV }) => {
                 > ⬇︎ Export to CSV
                 </button>
             </div>
+            
+            <div className="pagination-row" style={{ marginTop: '40px', marginBottom: '20px' }}>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalPages}
+                    onPageChange={handlePageChange}
+                    maxWidth={600}
+                    previousLabel={currentPage > 1 ? "Previous" : ""}
+                    nextLabel={currentPage < totalPages ? "Show more" : ""}
+                />
+            </div>
 
             <table
                 style={{
@@ -171,17 +182,6 @@ const Output = ({ results, onExportCSV }) => {
                     ))}
                 </tbody>
             </table>
-
-            <div className="mt-4">
-                <ResponsivePagination
-                    current={currentPage}
-                    total={totalPages}
-                    onPageChange={handlePageChange}
-                    maxWidth={300}
-                    previousLabel="Previous" 
-                    nextLabel="Next"
-                />
-            </div>
         </div>
     );
 };

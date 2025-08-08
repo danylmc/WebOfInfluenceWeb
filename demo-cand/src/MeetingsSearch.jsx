@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MeetingsTable from './MeetingsTable';
 import './MeetingsSearch.css';
+import './CandidateOverview.css';
 import { API_BASE } from './apiConfig';
 import { useNavigate } from 'react-router-dom';
-
+import ResponsivePagination from 'react-responsive-pagination';
+import 'react-responsive-pagination/themes/bootstrap.css';
 
 const MeetingsSearch = () => {
   const [searchQuery, setSearchQuery] = useState({
@@ -15,15 +17,16 @@ const MeetingsSearch = () => {
   });
   const [meetings, setMeetings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  useEffect(() => { setCurrentPage(1); }, [meetings]);
 
   const navigate = useNavigate();
+  const handleBackToHome = () => navigate('/home');
   
   const handleSearchChange = (event) => {
     const { name, value } = event.target;
-    setSearchQuery(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setSearchQuery(prevState => ({ ...prevState, [name]: value }));
   };
 
   const handleSearchSubmit = async () => {
@@ -62,72 +65,157 @@ const MeetingsSearch = () => {
     }
   };
 
+  const handleReset = () => {
+    setSearchQuery({ firstName: '', lastName: '', startDate: '', endDate: '', portfolio: '' });
+    setMeetings([]);
+    setCurrentPage(1);
+  };
+
+  const hasAnyInput =
+    searchQuery.firstName ||
+    searchQuery.lastName ||
+    searchQuery.startDate ||
+    searchQuery.endDate ||
+    searchQuery.portfolio;
+
   return (
-    <div className="p-4 relative">
-      {/* Header row with title and Back button */}
+    <div className="page-wrapper">
+      {/* Header row with title */}
       <div className="header-row">
-        <h2 className="text-2xl font-bold">Search Ministerial Meetings</h2>
-        <button
-          onClick={() => navigate('/home')}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"
-        >
-         ←  Back to Home
+        <h2>Web Of Influence Research</h2>
+      </div>
+
+      {/* Search MinisterMeetings + back button */}
+      <div className="donations-header-row">
+        <h2 className="donations-search-header">Minister Meetings</h2>
+        <button onClick={handleBackToHome} className="home-button">
+          ← Back to Home
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 max-w-2xl mt-6 mb-4">
-        <input
-          type="text"
-          name="firstName"
-          placeholder="First Name"
-          value={searchQuery.firstName}
-          onChange={handleSearchChange}
-          className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          name="lastName"
-          placeholder="Last Name"
-          value={searchQuery.lastName}
-          onChange={handleSearchChange}
-          className="p-2 border rounded"
-        />
-        <input
-          type="date"
-          name="startDate"
-          placeholder="Start Date"
-          value={searchQuery.startDate}
-          onChange={handleSearchChange}
-          className="p-2 border rounded"
-        />
-        <input
-          type="date"
-          name="endDate"
-          placeholder="End Date"
-          value={searchQuery.endDate}
-          onChange={handleSearchChange}
-          className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          name="portfolio"
-          placeholder="Portfolio"
-          value={searchQuery.portfolio}
-          onChange={handleSearchChange}
-          className="p-2 border rounded"
-        />
+      {/* Search Filters */}
+      <div className="filter-card">
+          <div className="filter-card__header-row">
+              <div className="filter-card__header">Search Filters</div>
+
+              {hasAnyInput && (
+                <button
+                  type="button"
+                  className="small-reset-button"
+                  onClick={handleReset}
+                  aria-label="Reset filters"
+                >
+                  ↺ Reset
+                </button>
+              )}
+            </div>
+
+            {/* First Name */}
+            <div className="field">
+              <span className="icon" aria-hidden>👤</span>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                value={searchQuery.firstName}
+                onChange={handleSearchChange}
+                className="input"
+              />
+            </div>
+
+            {/* Last Name */}
+            <div className="field">
+              <span className="icon" aria-hidden>👤</span>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last Name"
+                value={searchQuery.lastName}
+                onChange={handleSearchChange}
+                className="input"
+              />
+            </div>
+
+            {/* Start Date */}
+            <div className="field">
+              <span className="icon" aria-hidden>📅</span>
+              <input
+                type="date"
+                name="startDate"
+                placeholder="Start Date"
+                value={searchQuery.startDate}
+                onChange={handleSearchChange}
+                className="input"
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="field">
+              <span className="icon" aria-hidden>📅</span>
+              <input
+                type="date"
+                name="endDate"
+                placeholder="End Date"
+                value={searchQuery.endDate}
+                onChange={handleSearchChange}
+                className="input"
+              />
+            </div>
+
+            {/* Portfolio */}
+            <div className="field">
+              <span className="icon" aria-hidden>🏛️</span>
+              <input
+                type="text"
+                name="portfolio"
+                placeholder="Portfolio"
+                value={searchQuery.portfolio}
+                onChange={handleSearchChange}
+                className="input"
+              />
+            </div>
+          </div>
+
+      {/* Search Meetings */}
+      <div className="actions">
+        <button
+          type="button"
+          className="action-button search-button"
+          onClick={handleSearchSubmit}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Searching…' : '🔍 Search Meetings'}
+        </button>
       </div>
-      <button
-        onClick={handleSearchSubmit}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-        disabled={isLoading}
-      >
-        {isLoading ? 'Searching...' : 'Search Meetings'}
-      </button>
 
-      {meetings.length > 0 && <MeetingsTable meetings={meetings} />}
-    </div>
-  );
-};
+      {meetings.length > 0 && (
+        <>
+          {/* Pagination ABOVE the table */}
+          <div className="pagination-row">
+            <ResponsivePagination
+              current={currentPage}
+              total={Math.ceil(meetings.length / itemsPerPage)}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              maxWidth={600}
+              previousLabel={currentPage > 1 ? "Previous" : ""}
+              nextLabel="Next"
+            />
+          </div>
 
-export default MeetingsSearch;
+          {/* Table */}
+          <MeetingsTable
+            meetings={meetings.slice(
+              (currentPage - 1) * itemsPerPage,
+              currentPage * itemsPerPage
+            )}
+          />
+        </>
+      )}
+      </div>
+      );
+      };
+
+      export default MeetingsSearch;
