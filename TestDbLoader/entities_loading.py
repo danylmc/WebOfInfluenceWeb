@@ -30,6 +30,9 @@ except Error as e:
     print(f"Database connection error: {e}")
     raise
 
+if not os.environ.get("DB_NAME"):
+    print("⚠️  Warning: DB_NAME not set in environment or .env file.")
+
 # Use Entities DB - Remove below if havent created
 ld.use_db(mycursor, "Entities")
 
