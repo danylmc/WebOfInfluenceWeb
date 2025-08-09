@@ -26,9 +26,10 @@ const HomePage = () => {
       {/* Top bar with logout button */}
       <div className="top-bar">
         <h1 className="title">Web of Influence Research Homepage</h1>
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Link to="/settings" className="button">Settings</Link>
+          <button onClick={handleLogout} className="logout-button">Logout</button>
+        </div>
       </div>
 
       <div className="main-options">

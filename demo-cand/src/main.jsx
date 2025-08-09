@@ -8,6 +8,7 @@ import CandidateOverview from './CandidateOverview.jsx';
 import MeetingsSearch from './MeetingsSearch.jsx';
 import PersonProfile from './PersonProfile.jsx';
 import LoginPage from './Loginpage.jsx'; 
+import Settings from './Settings.jsx';
 
 // auth
 import AuthProvider from './auth/AuthProvider';
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/candidate-overview" element={<CandidateOverview />} />
           <Route path="/meetings" element={<MeetingsSearch />} />
           <Route path="/person/:firstName/:lastName" element={<PersonProfile />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>
