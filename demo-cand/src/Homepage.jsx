@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './auth/AuthProvider';
 import './HomePage.css';
 
 
@@ -7,21 +8,17 @@ const HomePage = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const navigate = useNavigate();
-
-  const handleSearchSubmit = () => {
-    const formattedFirstName = firstName.trim();
-    const formattedLastName = lastName.trim();
-
-    if (formattedFirstName && formattedLastName) {
-      navigate(`/person/${formattedFirstName}/${formattedLastName}`);
-    } else {
-      alert('Please enter both first and last name.');
-    }
-  };
+  const { logout } = useAuth();
 
   //Handld logout functionality
-  const handleLogout = () => {
-    navigate('/'); // Redirect to login page
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (e) {
+      console.error(e);
+      alert('Failed to log out, please try again.');
+    }
   };
 
   return (
