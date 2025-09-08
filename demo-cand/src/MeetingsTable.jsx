@@ -21,8 +21,8 @@ const MeetingsTable = ({ meetings }) => {
   });
 
   return (
-    <div className="mt-6 overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-300">
+    <div className="meetings-table-wrapper">
+      <table className="meetings-table">
         <thead className="bg-gray-100">
           <tr>
             <th

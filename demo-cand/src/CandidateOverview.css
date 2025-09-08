@@ -491,6 +491,165 @@ input[type="text"] {
   border-bottom: none;
 }
 
+/* Enhanced Meetings Table Horizontal Scrolling */
+.meetings-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* Enable smooth scrolling */
+  scroll-behavior: smooth;
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Webkit scrollbar styling for better UX */
+.meetings-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.meetings-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.meetings-table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.meetings-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.meetings-table {
+  width: 100%;
+  min-width: 1000px; /* Ensure table has minimum width to trigger horizontal scroll */
+  border-collapse: collapse;
+  background: white;
+  margin: 0;
+}
+
+.meetings-table th,
+.meetings-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  vertical-align: top;
+}
+
+/* Specific column widths for better layout */
+.meetings-table th:nth-child(1),
+.meetings-table td:nth-child(1) { /* Date */
+  width: 100px;
+  white-space: nowrap;
+}
+
+.meetings-table th:nth-child(2),
+.meetings-table td:nth-child(2) { /* Start Time */
+  width: 90px;
+  white-space: nowrap;
+}
+
+.meetings-table th:nth-child(3),
+.meetings-table td:nth-child(3) { /* End Time */
+  width: 90px;
+  white-space: nowrap;
+}
+
+.meetings-table th:nth-child(4),
+.meetings-table td:nth-child(4) { /* Title */
+  width: 250px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.meetings-table th:nth-child(5),
+.meetings-table td:nth-child(5) { /* Type */
+  width: 80px;
+  white-space: nowrap;
+}
+
+.meetings-table th:nth-child(6),
+.meetings-table td:nth-child(6) { /* Portfolio */
+  width: 150px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.meetings-table th:nth-child(7),
+.meetings-table td:nth-child(7) { /* Location */
+  width: 120px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.meetings-table th:nth-child(8),
+.meetings-table td:nth-child(8) { /* Notes */
+  width: 200px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.meetings-table th:nth-child(9),
+.meetings-table td:nth-child(9) { /* Attendees */
+  width: 200px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.meetings-table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.meetings-table th:hover {
+  background-color: #f1f5f9;
+}
+
+.meetings-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.meetings-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Add scroll indicators for better UX */
+.meetings-table-wrapper::before,
+.meetings-table-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.3s ease;
+}
+
+.meetings-table-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255,255,255,0.8), transparent);
+}
+
+.meetings-table-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+}
+
 /* Pagination Wrapper */
 .pagination-wrapper {
   display: flex;
