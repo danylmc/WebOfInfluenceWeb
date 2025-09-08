@@ -3,56 +3,107 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "./firebase";
-import './CandidateOverview.css';
+import './Settings.css';
 
 export default function Settings() {
   const { user } = useAuth();
   const [msg, setMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const email = user?.email ?? "";
-  const name  = user?.displayName ?? "(no display name)";
+  const name = user?.displayName ?? "(no display name)";
 
   const sendReset = async () => {
     try {
+      setIsLoading(true);
       setMsg("");
       await sendPasswordResetEmail(auth, email);
       setMsg("Password reset email sent. Check your inbox.");
     } catch (e) {
       setMsg(e.message || "Could not send reset email.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleBackToHome = () => navigate('/home');
+  const handleBackToHome = () => navigate('/');
 
   return (
-    <div className="page-wrapper">
-      <div className="candidate-wrapper">
-        <div className="candidate-inner">
+    <div className="settings-container">
+      {/* Header Section */}
+      <div className="settings-header">
+        <div className="settings-header-content">
+          <h1 className="settings-title">
+            <span className="settings-icon">⚙️</span>
+            Account Settings
+          </h1>
+          <button onClick={handleBackToHome} className="back-button">
+            ← Back to Home
+          </button>
+        </div>
+      </div>
 
-          {/* Header Row with back button */}
-          <div className="donations-header-row">
-            <h2 className="donations-search-header">Account Settings</h2>
-            <button onClick={handleBackToHome} className="home-button">
-              ← Back to Home
-            </button>
+      {/* Settings Content */}
+      <div className="settings-content">
+        {/* Profile Information Card */}
+        <div className="settings-card">
+          <div className="card-header">
+            <div className="card-icon">👤</div>
+            <h2 className="card-title">Profile Information</h2>
           </div>
+          <p className="card-description">
+            Your account details and personal information.
+          </p>
+          <div className="profile-info">
+            <div className="info-item">
+              <span className="info-label">Email Address</span>
+              <span className="info-value">{email}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">Display Name</span>
+              <span className="info-value">{name}</span>
+            </div>
+          </div>
+        </div>
 
-          {/* Profile Info */}
-          <section style={{ marginTop: 16 }}>
-            <h3>Profile</h3>
-            <p><strong>Email:</strong> {email}</p>
-            <p><strong>Username:</strong> {name}</p>
-          </section>
-
-          {/* Password Reset */}
-          <section style={{ marginTop: 24 }}>
-            <h3>Password</h3>
-            <p>To change your password, send a secure reset email to <strong>{email}</strong>.</p>
-            <button onClick={sendReset} className="action-button search-button">
-              Send password reset email
+        {/* Password Management Card */}
+        <div className="settings-card">
+          <div className="card-header">
+            <div className="card-icon">🔒</div>
+            <h2 className="card-title">Password Management</h2>
+          </div>
+          <p className="card-description">
+            Manage your account password and security settings.
+          </p>
+          <div className="password-section">
+            <div className="password-info">
+              <p>
+                To change your password, we'll send a secure reset link to <strong>{email}</strong>
+              </p>
+            </div>
+            <button 
+              onClick={sendReset} 
+              className="reset-button"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span>⏳</span>
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <span>📧</span>
+                  Send Password Reset Email
+                </>
+              )}
             </button>
-            {msg && <p style={{ marginTop: 8 }}>{msg}</p>}
-          </section>
+            {msg && (
+              <div className={`message ${msg.includes('sent') ? 'success' : 'error'}`}>
+                {msg}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

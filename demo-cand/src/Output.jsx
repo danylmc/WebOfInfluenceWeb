@@ -52,7 +52,6 @@ const Output = ({ results, onExportCSV }) => {
     const [processedResults, setProcessedResults] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
 
     useEffect(() => {
         const processResults = async () => {
@@ -81,9 +80,9 @@ const Output = ({ results, onExportCSV }) => {
     }, [results]);
 
     // Calculate pagination values 
-    const totalPages = Math.ceil(processedResults.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const totalPages = Math.ceil(processedResults.length / 20);
+    const startIndex = (currentPage - 1) * 20;
+    const endIndex = startIndex + 20;
     const currentData = processedResults.slice(startIndex, endIndex);
 
     const handlePageChange = (page) => {
@@ -101,24 +100,15 @@ const Output = ({ results, onExportCSV }) => {
 
     return (
         <div>
-            {/* Use your shared button styles */}
-            <div className="actions">
-                <button
-                    type="button"
-                    className="export-button"
-                    onClick={() => onExportCSV(processedResults)}
-                > ⬇︎ Export to CSV
-                </button>
-            </div>
-            
-            <div className="pagination-row" style={{ marginTop: '40px', marginBottom: '20px' }}>
+            <div className="pagination-wrapper" style={{ marginTop: '20px', marginBottom: '20px' }}>
                 <ResponsivePagination
                     current={currentPage}
                     total={totalPages}
                     onPageChange={handlePageChange}
-                    maxWidth={600}
-                    previousLabel={currentPage > 1 ? "Previous" : ""}
-                    nextLabel={currentPage < totalPages ? "Show more" : ""}
+                    maxWidth={800}
+                    previousLabel="Previous"
+                    nextLabel="Next"
+                    renderOnZeroPageCount={null}
                 />
             </div>
 
