@@ -5,6 +5,7 @@ import Navigation from './Navigation';
 import HomePage from './Homepage';
 import CandidateOverview from './CandidateOverview'; 
 import MeetingsSearch from './MeetingsSearch';
+import MeetingsOverview from './MeetingsOverview';
 import PersonProfile from './PersonProfile';
 
 import ProtectedRoute from './auth/ProtectedRoute';
@@ -24,6 +25,7 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/candidate-overview" element={<CandidateOverview />} />
             <Route path="/meetings" element={<MeetingsSearch />} />
+            <Route path="/meetings-overview" element={<MeetingsOverview />} />
             <Route path="/person/:firstName/:lastName" element={<PersonProfile />} />
           </Route>
         </Routes>

@@ -168,134 +168,189 @@ function CandidateOverview() {
     };
 
     return (
-        <div className="page-wrapper">
-            <div className="candidate-wrapper">
-                <div className="candidate-inner">
-
-                    {/* Header Row */}
-                    <div className="header-row">
-                        <h2>Web Of Influence Research</h2>
+        <div className="donations-page">
+            {/* Header Section */}
+            <div className="donations-header">
+                <div className="header-content">
+                    <div className="header-left">
+                        <div className="page-icon">💰</div>
+                        <div className="header-text">
+                            <h1 className="page-title">Donations Overview</h1>
+                            <p className="page-subtitle">Search and analyze political donation data</p>
+                        </div>
                     </div>
-
-                    {/* Donations search + back home button */}
-                    <div className="donations-header-row">
-                        <h2 className="donations-search-header">Donations Search</h2>
-                        <button onClick={handleBackToHome} className="home-button"> 
+                    <button onClick={handleBackToHome} className="back-button">
                         ← Back to Home
-                        </button>
-                    </div>
-
-                    {/* Year Toggle */}
-                    <div className="year-toggle-group">
-                    {Object.keys(selectedYears).sort().map((year) => (
-                        <button
-                        key={year}
-                        type="button"
-                        className={`year-chip ${selectedYears[year] ? 'active' : ''}`}
-                        onClick={() => handleYearChange(year)}
-                        aria-pressed={selectedYears[year]}
-                        >
-                        {year}
-                        </button>
-                    ))}
-                    </div>
-
-                    {/* Search Filters */}
-                    <div className="filter-card">
-                        <div className="filter-card__header-row">
-                            <div className="filter-card__header">Search Filters</div>
-
-                            <button
-                                type="button"
-                                className="small-reset-button"
-                                onClick={handleReset}
-                            >
-                                ↺ Reset
-                            </button>
-                        </div>
-
-                        {/* FirstName - Search Inputs */}
-                        <div className="field">
-                            <span className="icon" aria-hidden>👤</span>
-                            <input
-                            type="text"
-                            name="firstName"
-                            placeholder="First Name"
-                            value={searchQuery.firstName}
-                            onChange={handleSearchChange}
-                            className="input"
-                            />
-                        </div>
-
-                        {/* LastName - Search Inputs */}
-                        <div className="field">
-                            <span className="icon" aria-hidden>👤</span>
-                            <input
-                            type="text"
-                            name="lastName"
-                            placeholder="Last Name"
-                            value={searchQuery.lastName}
-                            onChange={handleSearchChange}
-                            className="input"
-                            />
-                        </div>
-
-                        {/* Party - Search Inputs */}
-                        <div className="field">
-                            <span className="icon" aria-hidden>🏛️</span>
-                            <input
-                            type="text"
-                            name="party"
-                            placeholder="Political Party"
-                            value={searchQuery.party}
-                            onChange={handleSearchChange}
-                            className="input"
-                            />
-                        </div>
-
-                        {/* Electorate - Search Inputs */}
-                        <div className="field">
-                            <span className="icon" aria-hidden>📍</span>
-                            <input
-                            type="text"
-                            name="electorate"
-                            placeholder="Electorate"
-                            value={searchQuery.electorate}
-                            onChange={handleSearchChange}
-                            className="input"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Search and Reset Buttons */}
-                    <div className="actions">
-                        <button
-                            type="button"
-                            className="action-button search-button"
-                            onClick={handleSearchSubmit}
-                            disabled={isLoading}
-                        > {isLoading ? 'Searching...' : '🔍 Search'}
-                        </button>
-                    </div>
+                    </button>
                 </div>
             </div>
 
-            {hasSearched && (
-            <div className="results-section">
-                <h2>Election Candidates Overview Database Search & Filter</h2>
+            {/* Main Content */}
+            <div className="donations-container">
+                {/* Search Section */}
+                <div className="search-section">
+                    <div className="search-card">
+                        <div className="card-header">
+                            <h2 className="card-title">
+                                <span className="card-icon">🔍</span>
+                                Search Filters
+                            </h2>
+                            <button
+                                type="button"
+                                className="reset-button"
+                                onClick={handleReset}
+                            >
+                                <span>↺</span>
+                                Reset
+                            </button>
+                        </div>
 
-                {error && <div className="error">{error}</div>}
-                {isLoading && <div>Loading results...</div>}
+                        {/* Year Selection */}
+                        <div className="filter-group">
+                            <label className="filter-label">Election Years</label>
+                            <div className="year-toggle-group">
+                                {Object.keys(selectedYears).sort().reverse().map((year) => (
+                                    <button
+                                        key={year}
+                                        type="button"
+                                        className={`year-chip ${selectedYears[year] ? 'active' : ''}`}
+                                        onClick={() => handleYearChange(year)}
+                                        aria-pressed={selectedYears[year]}
+                                    >
+                                        {year}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-                {Array.isArray(results) && results.length > 0 && (
-                <Output results={results} onExportCSV={handleExportCSV} />
+                        {/* Search Inputs - Using original working structure */}
+                        <div className="inputs-grid">
+                            <div className="field">
+                                <span className="icon" aria-hidden>👤</span>
+                                <input
+                                    type="text"
+                                    name="firstName"
+                                    placeholder="First Name"
+                                    value={searchQuery.firstName}
+                                    onChange={handleSearchChange}
+                                    className="input"
+                                />
+                            </div>
+
+                            <div className="field">
+                                <span className="icon" aria-hidden>👤</span>
+                                <input
+                                    type="text"
+                                    name="lastName"
+                                    placeholder="Last Name"
+                                    value={searchQuery.lastName}
+                                    onChange={handleSearchChange}
+                                    className="input"
+                                />
+                            </div>
+
+                            <div className="field">
+                                <span className="icon" aria-hidden>🏛️</span>
+                                <input
+                                    type="text"
+                                    name="party"
+                                    placeholder="Political Party"
+                                    value={searchQuery.party}
+                                    onChange={handleSearchChange}
+                                    className="input"
+                                />
+                            </div>
+
+                            <div className="field">
+                                <span className="icon" aria-hidden>📍</span>
+                                <input
+                                    type="text"
+                                    name="electorate"
+                                    placeholder="Electorate"
+                                    value={searchQuery.electorate}
+                                    onChange={handleSearchChange}
+                                    className="input"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Search Button */}
+                        <button
+                            type="button"
+                            className="search-button"
+                            onClick={handleSearchSubmit}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span className="loading-spinner">⏳</span>
+                                    Searching...
+                                </>
+                            ) : (
+                                <>
+                                    <span>🔍</span>
+                                    Search Donations
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Results Section */}
+                {hasSearched && (
+                    <div className="results-section">
+                        <div className="results-header">
+                            <h2 className="results-title">
+                                <span className="results-icon">📊</span>
+                                Search Results
+                                {Array.isArray(results) && results.length > 0 && (
+                                    <span className="results-count">({results.length} donations found)</span>
+                                )}
+                            </h2>
+                            {Array.isArray(results) && results.length > 0 && (
+                                <button
+                                    onClick={() => handleExportCSV(results)}
+                                    className="export-button"
+                                >
+                                    <span>📥</span>
+                                    Export CSV
+                                </button>
+                            )}
+                        </div>
+
+                        {error && (
+                            <div className="error-message">
+                                <span className="error-icon">⚠️</span>
+                                {error}
+                            </div>
+                        )}
+
+                        {isLoading && (
+                            <div className="loading-message">
+                                <span className="loading-spinner">⏳</span>
+                                Loading results...
+                            </div>
+                        )}
+
+                        {Array.isArray(results) && results.length > 0 && (
+                            <div className="results-content">
+                                <Output results={results} onExportCSV={handleExportCSV} />
+                                <BarChart results={results} isLoading={isLoading} />
+                            </div>
+                        )}
+
+                        {Array.isArray(results) && results.length === 0 && !isLoading && !error && (
+                            <div className="no-results">
+                                <span className="no-results-icon">🔍</span>
+                                <h3>No results found</h3>
+                                <p>Try adjusting your search criteria or selecting different years.</p>
+                            </div>
+                        )}
+                    </div>
                 )}
-
-                <BarChart results={results} isLoading={isLoading} />
             </div>
-            )}
         </div>
-        );
+    );
 
 }
 
